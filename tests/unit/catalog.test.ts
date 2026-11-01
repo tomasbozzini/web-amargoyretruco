@@ -13,6 +13,7 @@ import {
   validateCsvUrl,
 } from '../../src/lib/catalog';
 import fallbackData from '../../src/data/fallback-catalog.json';
+import { parsePrice } from '../../src/lib/price';
 
 const fixture = readFileSync(new URL('../fixtures/catalogo-prueba.csv', import.meta.url), 'utf8');
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/TEST/pub?output=csv';
@@ -234,11 +235,17 @@ describe('loadCatalog: fuente y respaldos', () => {
 });
 
 describe('fallback-catalog.json real', () => {
-  it('tiene las 10 filas del Sheets y, como no tienen precio, ninguna se muestra', () => {
+  it('cada fila se muestra o se ignora con un motivo (nunca rompe)', () => {
     const records = recordsFromObjects(fallbackData.rows);
-    expect(records).toHaveLength(10);
+    expect(records.length).toBe(fallbackData.rows.length);
     const { products, ignored } = buildProducts(records);
-    expect(products).toHaveLength(0);
-    expect(ignored).toHaveLength(10);
+    expect(products.length + ignored.length).toBe(records.length);
+    for (const item of ignored) expect(item.reasons.length).toBeGreaterThan(0);
+  });
+
+  it('las filas visibles con precio válido se muestran', () => {
+    const { products } = buildProducts(recordsFromObjects(fallbackData.rows));
+    const expected = fallbackData.rows.filter((row) => isVisible(row.Visible) && (parsePrice(row.Precio) ?? 0) > 0);
+    expect(products).toHaveLength(expected.length);
   });
 });

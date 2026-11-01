@@ -337,9 +337,19 @@ test('Sheets caído: usa la última copia buena en memoria', async ({ page, requ
 test('Sheets caído y sin copia en memoria: usa el respaldo y la página no se rompe', async ({ page }) => {
   const res = await page.goto(FALLBACK_SITE);
   expect(res?.status()).toBe(200);
-  // El respaldo real todavía no tiene precios: se muestra el mensaje amable.
-  await expect(page.getByRole('heading', { name: 'Estamos barajando de nuevo' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Pedir la lista por WhatsApp' })).toHaveAttribute('href', new RegExp(`^https://wa\\.me/${PHONE}\\?text=`));
+  // Productos de src/data/fallback-catalog.json, con aviso de lista guardada.
+  await expect(page.getByText('Estamos mostrando una lista guardada')).toBeVisible();
+  expect(await page.locator('[data-product]').count()).toBeGreaterThan(0);
   await expect(page.getByRole('heading', { name: /Mate y truco/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: '¿Cómo se juega?' })).toBeVisible();
+});
+
+test('Sheets sin productos para mostrar: mensaje amable con link a WhatsApp', async ({ page, request }) => {
+  await request.post(`${MOCK}/control/empty`);
+  const res = await page.goto('/');
+  expect(res?.status()).toBe(200);
+  await expect(page.locator('[data-product]')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Estamos barajando de nuevo' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Pedir la lista por WhatsApp' })).toHaveAttribute('href', new RegExp(`^https://wa\\.me/${PHONE}\\?text=`));
+  await request.post(`${MOCK}/control/ok`);
 });

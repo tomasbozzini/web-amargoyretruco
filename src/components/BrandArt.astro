@@ -1,24 +1,29 @@
 ---
 /**
- * Ilustración de reemplazo cuando un producto no tiene foto: un naipe con la
- * marca, el palo (espada, basto, oro o copa) y un mate.
- * El palo y los colores se eligen de forma estable a partir del nombre de la marca.
+ * Ilustración de reemplazo cuando un producto no tiene foto: un paquete de
+ * yerba con la marca en la etiqueta, la presentación y hojas de yerba mate.
+ * Las esquinas de naipe (inicial + palo) son el guiño al truco.
+ * Colores y palo salen del orden de la marca en el catálogo (`variant`), así se
+ * reparten parejo; si no se pasa, se calculan a partir del nombre.
+ * Es decorativa (aria-hidden): el nombre del producto ya está como texto en la tarjeta.
  */
 import Icon, { type IconName } from './Icon.astro';
 
 interface Props {
   brand: string;
   presentation?: string;
+  /** Posición de la marca en el catálogo (0, 1, 2...). */
+  variant?: number;
 }
 
-const { brand, presentation = '' } = Astro.props;
+const { brand, presentation = '', variant } = Astro.props;
 
 const suits: IconName[] = ['espada', 'basto', 'oro', 'copa'];
 const themes = [
-  { bg: 'bg-verde', text: 'text-crema', accent: 'text-[#e9a58f]' },
-  { bg: 'bg-terracota', text: 'text-white', accent: 'text-crema' },
-  { bg: 'bg-mate', text: 'text-crema', accent: 'text-[#e9a58f]' },
-  { bg: 'bg-verde-oscuro', text: 'text-crema', accent: 'text-[#e9a58f]' },
+  { bg: 'bg-verde', text: 'text-crema', accent: 'text-[#e9a58f]', band: 'fill-terracota', bandText: 'text-white' },
+  { bg: 'bg-terracota', text: 'text-white', accent: 'text-crema', band: 'fill-verde-oscuro', bandText: 'text-crema' },
+  { bg: 'bg-mate', text: 'text-crema', accent: 'text-[#e9a58f]', band: 'fill-verde', bandText: 'text-crema' },
+  { bg: 'bg-verde-oscuro', text: 'text-crema', accent: 'text-[#e9a58f]', band: 'fill-terracota', bandText: 'text-white' },
 ];
 
 // FNV-1a + mezcla final: reparte bien colores y palos aunque haya pocas marcas.
@@ -29,12 +34,33 @@ hash = Math.imul(hash, 0x85ebca6b);
 hash ^= hash >>> 13;
 hash = Math.imul(hash, 0xc2b2ae35);
 hash = (hash ^ (hash >>> 16)) >>> 0;
-const theme = themes[hash % themes.length];
-const suit = suits[(hash >>> 8) % suits.length];
+const index = variant !== undefined && variant >= 0 ? variant : hash;
+const theme = themes[index % themes.length];
+const suit = suits[(index + Math.floor(index / suits.length)) % suits.length];
 const initial = brand.trim().charAt(0).toUpperCase() || '?';
+
+// Tamaño de la marca según el largo de la palabra más larga (para que entre en la etiqueta).
+const longestWord = Math.max(...brand.split(/\s+/).map((word) => word.length));
+const brandSize =
+  longestWord <= 6
+    ? 'text-[length:15cqw]'
+    : longestWord <= 8
+      ? 'text-[length:12.5cqw]'
+      : longestWord <= 10
+        ? 'text-[length:10.5cqw]'
+        : longestWord <= 12
+          ? 'text-[length:9cqw]'
+          : 'text-[length:7.5cqw]';
+
+// Cierre dentado del paquete.
+let crimp = 'M20 10 L20 5';
+for (let x = 20; x < 88; x += 4) crimp += ` L${x + 2} 2 L${x + 4} 5`;
+crimp += ' L88 10 Z';
+
+const leaf = 'M54 146 C45.5 138 45.5 125 54 117 C62.5 125 62.5 138 54 146 Z';
 ---
 
-<div class:list={['yerba-texture absolute inset-0 flex flex-col items-center justify-center p-4 text-center', theme.bg, theme.text]} aria-hidden="true">
+<div class:list={['yerba-texture absolute inset-0 flex items-center justify-center', theme.bg, theme.text]} aria-hidden="true">
   <span class="naipe-index top-2.5 left-3">
     <span>{initial}</span>
     <Icon name={suit} class:list={['mt-0.5 size-4', theme.accent]} />
@@ -45,7 +71,43 @@ const initial = brand.trim().charAt(0).toUpperCase() || '?';
   </span>
   <span class="absolute inset-2 rounded-xl border border-current opacity-25"></span>
 
-  <Icon name="mate" class:list={['mb-2 size-10 opacity-90', theme.accent]} />
-  <span class="line-clamp-2 font-display text-[1.65rem] leading-[1.05] break-words">{brand}</span>
-  {presentation && <span class="label mt-2 text-base opacity-80">{presentation}</span>}
+  {/* Paquete de yerba */}
+  <div class="@container relative aspect-[3/4] w-[62%] drop-shadow-[0_8px_8px_rgb(0_0_0/0.28)]">
+    <svg viewBox="0 0 120 160" class="absolute inset-0 size-full" xmlns="http://www.w3.org/2000/svg">
+      {/* costado (fuelle) */}
+      <path d="M96 32 L108 40 L108 148 L96 154 Z" fill="#d9cbad" />
+      {/* frente */}
+      <rect x="12" y="32" width="84" height="122" rx="3" fill="#fbf7ee" />
+      {/* pliegue superior y cierre */}
+      <path d="M12 32 L20 10 L88 10 L96 32 Z" fill="#efe5cf" />
+      <path d="M96 32 L88 10 L100 17 L108 40 Z" fill="#cfc09f" />
+      <path d={crimp} fill="#e4d7bb" />
+      <path d="M20 10 L88 10" stroke="#cdbd9b" stroke-width="1" />
+      {/* etiqueta con la marca */}
+      <rect x="12" y="54.5" width="84" height="1.6" class={theme.band} opacity="0.55" />
+      <rect x="12" y="58" width="84" height="42" class={theme.band} />
+      <rect x="12" y="101.9" width="84" height="1.6" class={theme.band} opacity="0.55" />
+      {/* hojas de yerba mate */}
+      <g>
+        <path d={leaf} fill="#4b7a52" transform="rotate(-42 54 146)" />
+        <path d={leaf} fill="#4b7a52" transform="rotate(42 54 146)" />
+        <path d={leaf} fill="#2f5d3a" />
+        <path d="M54 146 L54 121" stroke="#fbf7ee" stroke-width="0.9" opacity="0.7" />
+        <path d="M54 146 L54 121" stroke="#fbf7ee" stroke-width="0.9" opacity="0.6" transform="rotate(-42 54 146)" />
+        <path d="M54 146 L54 121" stroke="#fbf7ee" stroke-width="0.9" opacity="0.6" transform="rotate(42 54 146)" />
+      </g>
+      {/* brillo del envoltorio */}
+      <rect x="17" y="35" width="5" height="114" rx="2.5" fill="#ffffff" opacity="0.45" />
+    </svg>
+
+    <span class="label absolute top-[23.5%] left-[10%] w-[70%] text-center text-[length:8cqw] text-mate">Yerba mate</span>
+    <span class="absolute top-[36.25%] left-[10%] flex h-[26.25%] w-[70%] items-center justify-center px-[4cqw] text-center">
+      <span class:list={['line-clamp-2 font-display leading-[1.05] break-words', brandSize, theme.bandText]}>{brand}</span>
+    </span>
+    {
+      presentation && (
+        <span class="label absolute top-[65.5%] left-[10%] w-[70%] text-center text-[length:9cqw] text-verde-oscuro">{presentation}</span>
+      )
+    }
+  </div>
 </div>

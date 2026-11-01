@@ -12,9 +12,11 @@ import Icon from './Icon.astro';
 interface Props {
   product: Product;
   index: number;
+  /** Posición de la marca en el catálogo (define los colores de la ilustración). */
+  brandIndex?: number;
 }
 
-const { product, index } = Astro.props;
+const { product, index, brandIndex } = Astro.props;
 const status = stockStatus(product.stock);
 const soldOut = status === 'soldout';
 const fullName = fullProductName(product.brand, product.name);
@@ -37,7 +39,7 @@ const titleId = `p-${product.id}-title`;
     data-order={String(index)}
   >
     <div class="relative m-2 mb-0 aspect-square overflow-hidden rounded-xl">
-      <BrandArt brand={product.brand} presentation={product.presentation} />
+      <BrandArt brand={product.brand} presentation={product.presentation} variant={brandIndex} />
       {
         product.photo && (
           <img
@@ -55,10 +57,10 @@ const titleId = `p-${product.id}-title`;
       }
       {
         soldOut ? (
-          <span class="label absolute top-2 right-2 rounded-md bg-verde-oscuro px-2 py-1.5 text-base text-crema">Agotado</span>
+          <span class="label absolute top-2 right-2 rounded-md bg-verde-oscuro px-2 py-1.5 text-base text-crema shadow-md ring-2 ring-crema">Agotado</span>
         ) : (
           status === 'low' && (
-            <span class="label absolute top-2 right-2 rounded-md bg-terracota px-2 py-1.5 text-base text-white">Últimas unidades</span>
+            <span class="label absolute top-2 right-2 rounded-md bg-crema px-2 py-1.5 text-base text-terracota-oscuro shadow-md ring-2 ring-terracota-oscuro">Últimas unidades</span>
           )
         )
       }

@@ -97,7 +97,7 @@ const consultUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
 
           <ul class="mt-4 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4" data-product-grid>
             {products.map((product, index) => (
-              <ProductCard product={product} index={index} />
+              <ProductCard product={product} index={index} brandIndex={brands.indexOf(product.brand)} />
             ))}
           </ul>
 
