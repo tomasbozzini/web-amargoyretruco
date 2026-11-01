@@ -15,7 +15,7 @@ function totalsFor(items: [CartProduct, number][]) {
 
 const base = {
   businessName: 'Amargo y Retruco',
-  pickupArea: 'zona Campus',
+  pickupArea: 'zona Campus universitario',
   city: 'Tandil',
   disclaimer: DISCLAIMER,
 };
@@ -51,7 +51,7 @@ describe('buildOrderMessage', () => {
 
   it('retiro, sin nombre ni zona', () => {
     const message = buildOrderMessage({ ...base, totals: totalsFor([[baldo, 1]]), delivery: 'pickup' });
-    expect(message).toContain('Entrega: Retiro en zona Campus');
+    expect(message).toContain('Entrega: Retiro en zona Campus universitario');
     expect(message).not.toContain('Nombre:');
     expect(message).not.toContain('Zona/barrio:');
     expect(message).toContain(DISCLAIMER);

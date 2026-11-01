@@ -38,7 +38,7 @@ const ogHtml = `<!doctype html><html><head><meta charset="utf-8">${fonts}<style>
   <div style="position:absolute;left:72px;top:118px;width:640px">
     <div style="font-family:'Bebas Neue';font-size:34px;letter-spacing:.08em;color:#E9A58F">AMARGO Y RETRUCO · TANDIL</div>
     <div style="font-family:'Abril Fatface';font-size:84px;line-height:1.02;margin-top:14px">Mate y truco,<br><span style="font-style:italic;color:#E9A58F">cosa seria.</span></div>
-    <div style="font-size:28px;margin-top:30px;color:rgba(243,235,216,.92)">Delivery en Tandil · Retiro en zona Campus<br>Pedidos por WhatsApp</div>
+    <div style="font-size:28px;margin-top:30px;color:rgba(243,235,216,.92)">Delivery en Tandil<br>Retiro en zona Campus universitario<br>Pedidos por WhatsApp</div>
   </div>
   <div style="position:absolute;right:110px;top:150px;width:230px;height:322px">
     ${card(`<div style="position:absolute;top:50%;left:16px;transform:translateY(-50%)">${icon('espada', 48, 'rgba(181,84,58,.85)')}</div>`, 'transform:translateX(-70px) rotate(-14deg);transform-origin:bottom center')}

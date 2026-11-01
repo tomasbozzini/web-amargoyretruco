@@ -153,12 +153,12 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
   await expect(orderLink(page)).not.toHaveAttribute('href', /.+/);
 
   // Ofrece cambiar a retiro.
-  await cart.getByRole('button', { name: 'Cambiar a retiro en zona Campus' }).click();
-  await expect(cart.getByLabel(/Retiro en zona Campus/)).toBeChecked();
+  await cart.getByRole('button', { name: 'Cambiar a retiro en zona Campus universitario' }).click();
+  await expect(cart.getByLabel(/Retiro en zona Campus universitario/)).toBeChecked();
   await expect(cart.locator('[data-min-warning]')).toBeHidden();
   await expect(orderLink(page)).not.toHaveAttribute('aria-disabled', 'true');
   let message = await orderMessage(page);
-  expect(message).toContain('Entrega: Retiro en zona Campus');
+  expect(message).toContain('Entrega: Retiro en zona Campus universitario');
   expect(message).toContain('*Total: $ 17.200*');
   expect(message).toContain(DISCLAIMER);
 
@@ -224,7 +224,7 @@ test('el carrito se guarda al recargar, sin datos personales', async ({ page }) 
   await card(page, ID.baldo1kg).locator('[data-add]').click();
   await page.locator('[data-cart-open]').first().click();
   await page.getByLabel(/Tu nombre/).fill('Juana');
-  await page.getByLabel(/Retiro en zona Campus/).check();
+  await page.getByLabel(/Retiro en zona Campus universitario/).check();
   await page.keyboard.press('Escape');
 
   await page.reload();
@@ -235,7 +235,7 @@ test('el carrito se guarda al recargar, sin datos personales', async ({ page }) 
 
   await page.locator('[data-cart-open]').first().click();
   await expect(page.getByLabel(/Tu nombre/)).toHaveValue('');
-  await expect(page.getByLabel(/Retiro en zona Campus/)).toBeChecked();
+  await expect(page.getByLabel(/Retiro en zona Campus universitario/)).toBeChecked();
 });
 
 test('un carrito guardado se ajusta al stock actual y los precios salen del catálogo', async ({ page }) => {

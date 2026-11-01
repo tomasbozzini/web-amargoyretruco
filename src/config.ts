@@ -17,7 +17,7 @@ export const BUSINESS = {
   countryCode: 'AR',
   tagline: 'Mate y truco, cosa seria',
   description:
-    'Yerba mate de las marcas que te gustan, con delivery en Tandil o retiro en zona Campus. Armá tu pedido y lo cerramos por WhatsApp.',
+    'Yerba mate de las marcas que te gustan, con delivery en Tandil o retiro en zona Campus universitario. Armá tu pedido y lo cerramos por WhatsApp.',
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -45,7 +45,7 @@ export const INSTAGRAM_HANDLE = '@amargoyretruco.tandil';
 export const MIN_DELIVERY_AMOUNT = 20000;
 
 /** Zona de retiro. La dirección exacta NO se publica: se coordina por WhatsApp. */
-export const PICKUP_AREA = 'zona Campus';
+export const PICKUP_AREA = 'zona Campus universitario';
 
 /**
  * Horarios de atención y entrega. `null` = todavía no definidos
