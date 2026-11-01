@@ -1,0 +1,99 @@
+---
+import '../styles/global.css';
+import { BUSINESS, INSTAGRAM_URL, PAYMENT_METHODS, WHATSAPP_NUMBER } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Datos estructurados solo en la portada. */
+  structuredData?: boolean;
+  noindex?: boolean;
+}
+
+const {
+  title = `${BUSINESS.name} | Yerba mate en ${BUSINESS.city}`,
+  description = BUSINESS.description,
+  structuredData = false,
+  noindex = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, site).toString();
+const ogImage = new URL('/og-image.png', site).toString();
+
+/*
+ * LocalBusiness sin dirección exacta: solo ciudad y área de servicio.
+ * Son datos de config.ts (no del Sheets). El JSON se escapa para que no pueda
+ * cerrar la etiqueta <script>.
+ */
+const jsonLd = structuredData
+  ? JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Store',
+      name: BUSINESS.name,
+      description: BUSINESS.description,
+      url: site.toString(),
+      image: ogImage,
+      logo: new URL('/apple-touch-icon.png', site).toString(),
+      telephone: `+${WHATSAPP_NUMBER}`,
+      sameAs: [INSTAGRAM_URL],
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: BUSINESS.city,
+        addressRegion: BUSINESS.region,
+        addressCountry: BUSINESS.countryCode,
+      },
+      areaServed: { '@type': 'City', name: BUSINESS.city },
+      paymentAccepted: PAYMENT_METHODS.join(', '),
+      currenciesAccepted: 'ARS',
+    }).replace(/</g, '\\u003c')
+  : null;
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#1E3A2B" />
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <!-- Open Graph (WhatsApp, Instagram, Facebook) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content={BUSINESS.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${BUSINESS.name}: ${BUSINESS.tagline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Tipografías: Abril Fatface (títulos), Bebas Neue (etiquetas), DM Sans (texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&display=swap"
+    />
+
+    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+  </head>
+  <body>
+    <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-verde-oscuro focus:px-4 focus:py-3 focus:text-crema">
+      Saltar al contenido
+    </a>
+    <slot />
+  </body>
+</html>

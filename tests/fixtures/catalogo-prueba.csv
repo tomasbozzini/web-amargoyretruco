@@ -1,0 +1,11 @@
+Marca,Producto,Presentación,Precio,Stock,Foto,Visible
+Baldo,Baldo Tradicional,500 g,$8.600,6,,SI
+Baldo,Baldo Tradicional,1 kg,"$15.900,00",4,,SI
+Canarias,Canarias Serena,500 g,9200,3,https://example.invalid/serena.jpg,SI
+Canarias,Canarias Edición Especial,500 g,"10.500,00",2,,SI
+Rei Verde,Rei Verde Tradicional,500 g,7400,0,,SI
+Sara,"Sara <img src=x onerror=alert(1)>",500 g,7100,5,javascript:alert(1),SI
+Verdecita,Verdecita,500 g,,6,,SI
+Centenaria,Centenaria,500 g,6900,3,,NO
+Oculta,Precio absurdo,500 g,5000000,3,,SI
+,Sin marca,500 g,5000,3,,SI

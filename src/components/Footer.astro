@@ -1,0 +1,42 @@
+---
+import { BUSINESS, INSTAGRAM_HANDLE, INSTAGRAM_URL, PICKUP_AREA, WHATSAPP_GREETING, WHATSAPP_NUMBER } from '../config';
+import { buildWhatsAppUrl } from '../lib/whatsapp';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
+const year = new Date().getFullYear();
+---
+
+<footer class="on-dark bg-verde-oscuro pt-12 pb-28 text-crema md:pb-12">
+  <div class="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-[1.4fr_1fr]">
+    <div>
+      <Logo size="md" dark decorative />
+      <p class="label mt-3 text-2xl">{BUSINESS.name}</p>
+      <p class="mt-1 text-crema/90">Yerba mate en {BUSINESS.city}, {BUSINESS.region}.</p>
+      <p class="mt-1 text-crema/90">Delivery en {BUSINESS.city} · Retiro en {PICKUP_AREA}</p>
+    </div>
+
+    <div>
+      <h2 class="label text-xl text-[#e9a58f]">Hablemos</h2>
+      <ul class="mt-3 space-y-2">
+        <li>
+          <a href={whatsappUrl} class="inline-flex min-h-11 items-center gap-3 rounded-lg font-semibold hover:text-[#e9a58f]" target="_blank" rel="noopener noreferrer">
+            <Icon name="whatsapp" class="size-6" />
+            WhatsApp
+          </a>
+        </li>
+        <li>
+          <a href={INSTAGRAM_URL} class="inline-flex min-h-11 items-center gap-3 rounded-lg font-semibold hover:text-[#e9a58f]" target="_blank" rel="noopener noreferrer">
+            <Icon name="instagram" class="size-6" />
+            Instagram {INSTAGRAM_HANDLE}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-10 max-w-6xl border-t border-crema/15 px-4 pt-6 text-sm text-crema/80">
+    <p>© {year} {BUSINESS.name} · {BUSINESS.city}. Cebá bien, jugá mejor.</p>
+  </div>
+</footer>

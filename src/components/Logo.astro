@@ -1,0 +1,46 @@
+---
+/**
+ * Logo: usa public/logo.svg si existe; si no, el logotipo tipográfico "A y R"
+ * (la "y" en cursiva terracota).
+ */
+import { BUSINESS } from '../config';
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  /** Sobre fondo oscuro, las letras van en crema. */
+  dark?: boolean;
+  /** Si al lado ya está el nombre escrito, el logo se oculta a lectores de pantalla. */
+  decorative?: boolean;
+}
+
+const { size = 'sm', class: className = '', dark = false, decorative = false } = Astro.props;
+const hasLogo = __HAS_LOGO__;
+const imgSize = { sm: 44, md: 64, lg: 168 }[size];
+const imgClass = { sm: 'size-11', md: 'size-16', lg: 'size-28 sm:size-40' }[size];
+const textSize = { sm: 'text-2xl', md: 'text-4xl', lg: 'text-6xl sm:text-8xl' }[size];
+---
+
+{
+  hasLogo ? (
+    <img src="/logo.svg" alt={decorative ? '' : BUSINESS.name} width={imgSize} height={imgSize} class:list={[imgClass, 'object-contain', className]} decoding="async" />
+  ) : (
+    <span
+      class:list={[
+        'inline-flex items-baseline font-display leading-none select-none',
+        textSize,
+        dark ? 'text-crema' : 'text-verde-oscuro',
+        className,
+      ]}
+      role={decorative ? undefined : 'img'}
+      aria-label={decorative ? undefined : BUSINESS.name}
+      aria-hidden={decorative ? 'true' : undefined}
+    >
+      <span aria-hidden="true">A</span>
+      <span aria-hidden="true" class:list={['mx-[0.12em] italic', dark ? 'text-[#e07a5c]' : 'text-terracota']}>
+        y
+      </span>
+      <span aria-hidden="true">R</span>
+    </span>
+  )
+}

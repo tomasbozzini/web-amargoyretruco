@@ -1,0 +1,51 @@
+---
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+const links = [
+  { href: '#catalogo', label: 'Yerbas' },
+  { href: '#como-comprar', label: 'Cómo comprar' },
+  { href: '#preguntas', label: 'Preguntas' },
+  { href: '#quienes-somos', label: 'Quiénes somos' },
+];
+---
+
+<header class="sticky top-0 z-30 border-b border-verde-oscuro/10 bg-crema/95 backdrop-blur supports-[backdrop-filter]:bg-crema/85">
+  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+    <a href="#inicio" class="flex items-center gap-2 rounded-md">
+      <Logo size="sm" decorative />
+      <span class="label sr-only text-xl text-verde-oscuro min-[380px]:not-sr-only">Amargo y Retruco</span>
+    </a>
+
+    <nav aria-label="Secciones" class="hidden md:block">
+      <ul class="flex items-center gap-1">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} class="rounded-lg px-3 py-2 font-semibold hover:bg-crema-claro hover:text-terracota-oscuro">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button
+      type="button"
+      class="relative inline-flex min-h-12 items-center gap-2 rounded-xl bg-verde-oscuro px-4 font-bold text-crema hover:bg-verde"
+      aria-haspopup="dialog"
+      aria-controls="cart"
+      data-cart-open
+    >
+      <Icon name="cart" class="size-6" />
+      <span>Pedido</span>
+      <span
+        class="absolute -top-2 -right-2 inline-flex min-w-6 items-center justify-center rounded-full bg-terracota px-1.5 text-sm leading-6 text-white ring-2 ring-crema"
+        data-cart-count
+        hidden
+      ></span>
+      <span class="sr-only" data-cart-count-sr>, vacío</span>
+    </button>
+  </div>
+</header>

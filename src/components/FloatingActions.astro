@@ -1,0 +1,35 @@
+---
+/**
+ * Mobile: botón flotante de WhatsApp y barra inferior "Ver pedido" (aparece con
+ * productos en el carrito). Además, el aviso tipo "toast" al agregar productos.
+ */
+import { WHATSAPP_GREETING, WHATSAPP_NUMBER } from '../config';
+import { buildWhatsAppUrl } from '../lib/whatsapp';
+import Icon from './Icon.astro';
+
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
+---
+
+<div class="fixed inset-x-0 bottom-0 z-20 md:hidden" data-floating>
+  <a
+    href={whatsappUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="absolute right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] inline-flex size-14 items-center justify-center rounded-full bg-verde text-white shadow-lg ring-4 ring-crema/70 transition-[bottom,opacity,transform] hover:bg-verde-oscuro data-[raised=true]:bottom-[calc(5.5rem+env(safe-area-inset-bottom))] data-[concealed=true]:pointer-events-none data-[concealed=true]:translate-y-4 data-[concealed=true]:opacity-0"
+    data-whatsapp-fab
+  >
+    <Icon name="whatsapp" class="size-7" />
+    <span class="sr-only">Escribinos por WhatsApp</span>
+  </a>
+
+  <div class="bg-crema-claro/95 px-4 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-6px_20px_rgb(30_58_43/0.15)] backdrop-blur" data-mobile-cart-bar hidden>
+    <button type="button" class="btn btn-primary w-full justify-between text-lg" aria-haspopup="dialog" aria-controls="cart" data-cart-open>
+      <span class="flex items-center gap-2"><Icon name="cart" class="size-6" /> Ver pedido</span>
+      <span data-mobile-cart-summary></span>
+    </button>
+  </div>
+</div>
+
+<div class="pointer-events-none fixed inset-x-0 top-20 z-40 flex justify-center px-4" aria-live="polite" aria-atomic="true">
+  <p class="rounded-xl bg-verde-oscuro px-4 py-3 font-semibold text-crema shadow-lg" data-toast hidden></p>
+</div>

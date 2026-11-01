@@ -1,0 +1,16 @@
+{
+  "_info": "Respaldo del catálogo si el Google Sheets no responde. Mismas columnas que la pestaña Catalogo. Se regenera con `npm run fallback:update` (lee CATALOG_CSV_URL). Copia del 2026-11-01: el Sheets todavía no tiene precios cargados, por eso estas filas no se muestran (las reglas ignoran filas sin precio).",
+  "updatedAt": "2026-11-01",
+  "rows": [
+    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "500 g", "Precio": "", "Stock": "6", "Foto": "", "Visible": "SI" },
+    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "1 kg", "Precio": "", "Stock": "4", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Tradicional", "Presentación": "500 g", "Precio": "", "Stock": "5", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Serena", "Presentación": "500 g", "Precio": "", "Stock": "3", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Edición Especial", "Presentación": "500 g", "Precio": "", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Té verde y jengibre", "Presentación": "500 g", "Precio": "", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Rei Verde", "Producto": "Rei Verde Tradicional", "Presentación": "500 g", "Precio": "", "Stock": "5", "Foto": "", "Visible": "SI" },
+    { "Marca": "Sara", "Producto": "Sara Coco", "Presentación": "500 g", "Precio": "", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Verdecita", "Producto": "Verdecita", "Presentación": "500 g", "Precio": "", "Stock": "6", "Foto": "", "Visible": "SI" },
+    { "Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "500 g", "Precio": "", "Stock": "3", "Foto": "", "Visible": "SI" }
+  ]
+}

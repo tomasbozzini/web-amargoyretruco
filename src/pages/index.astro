@@ -1,0 +1,55 @@
+---
+/**
+ * Portada. Se renderiza en el servidor (no se pre-genera) para leer el catálogo
+ * del Google Sheets en cada pedido al CDN; Vercel cachea la respuesta 5 minutos
+ * y la sigue sirviendo mientras se actualiza en segundo plano.
+ */
+import { CATALOG_CSV_URL } from 'astro:env/server';
+import About from '../components/About.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import Catalog from '../components/Catalog.astro';
+import FAQ from '../components/FAQ.astro';
+import FloatingActions from '../components/FloatingActions.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import HowToBuy from '../components/HowToBuy.astro';
+import { BUSINESS, CATALOG_CACHE_CONTROL, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, WHATSAPP_NUMBER } from '../config';
+import Base from '../layouts/Base.astro';
+import { loadCatalog } from '../lib/catalog';
+
+export const prerender = false;
+
+const catalog = await loadCatalog({ url: CATALOG_CSV_URL });
+Astro.response.headers.set('Cache-Control', CATALOG_CACHE_CONTROL);
+---
+
+<Base structuredData>
+  <Header />
+  <main id="contenido">
+    <Hero />
+    <Catalog catalog={catalog} />
+    <HowToBuy />
+    <FAQ />
+    <About />
+  </main>
+  <Footer />
+  <FloatingActions />
+  <CartDrawer />
+
+  {/* Configuración para el script del carrito (solo datos públicos de config.ts). */}
+  <div
+    hidden
+    data-app-config
+    data-business={BUSINESS.name}
+    data-city={BUSINESS.city}
+    data-pickup={PICKUP_AREA}
+    data-phone={WHATSAPP_NUMBER}
+    data-min-delivery={String(MIN_DELIVERY_AMOUNT)}
+    data-disclaimer={ORDER_DISCLAIMER}
+  >
+  </div>
+  <script>
+    import '../scripts/app';
+  </script>
+</Base>

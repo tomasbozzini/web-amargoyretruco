@@ -1,0 +1,34 @@
+{
+  "name": "amargo-y-retruco",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web de Amargo y Retruco: yerba mate en Tandil, pedidos por WhatsApp.",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "test": "vitest run",
+    "test:e2e": "ASTRO_ADAPTER=node astro build && playwright test",
+    "fallback:update": "node scripts/update-fallback.mjs",
+    "images": "node scripts/generate-images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^11.0.17",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.4",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/node": "^11.1.9",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.20.5",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

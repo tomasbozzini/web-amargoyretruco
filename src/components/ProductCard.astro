@@ -1,0 +1,97 @@
+---
+/**
+ * Tarjeta de producto. Los datos para el carrito viajan en atributos data-*
+ * (Astro los escapa); el script del cliente los lee con `dataset`.
+ */
+import { stockStatus, type Product } from '../lib/catalog';
+import { formatPrice } from '../lib/price';
+import { fullProductName, normalizeForSearch } from '../lib/text';
+import BrandArt from './BrandArt.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  product: Product;
+  index: number;
+}
+
+const { product, index } = Astro.props;
+const status = stockStatus(product.stock);
+const soldOut = status === 'soldout';
+const fullName = fullProductName(product.brand, product.name);
+const searchText = normalizeForSearch(`${product.brand} ${product.name} ${product.presentation}`);
+const titleId = `p-${product.id}-title`;
+---
+
+<li class="flex" data-product-item>
+  <article
+    class:list={['naipe flex w-full flex-col overflow-hidden', soldOut && 'opacity-80']}
+    aria-labelledby={titleId}
+    data-product
+    data-id={product.id}
+    data-brand={product.brand}
+    data-name={product.name}
+    data-presentation={product.presentation}
+    data-price={String(product.price)}
+    data-stock={String(product.stock)}
+    data-search={searchText}
+    data-order={String(index)}
+  >
+    <div class="relative m-2 mb-0 aspect-square overflow-hidden rounded-xl">
+      <BrandArt brand={product.brand} presentation={product.presentation} />
+      {
+        product.photo && (
+          <img
+            src={product.photo}
+            alt={`${fullName}${product.presentation ? ` ${product.presentation}` : ''}`}
+            width="400"
+            height="400"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            class="absolute inset-0 size-full bg-white object-cover"
+            data-product-img
+          />
+        )
+      }
+      {
+        soldOut ? (
+          <span class="label absolute top-2 right-2 rounded-md bg-verde-oscuro px-2 py-1.5 text-base text-crema">Agotado</span>
+        ) : (
+          status === 'low' && (
+            <span class="label absolute top-2 right-2 rounded-md bg-terracota px-2 py-1.5 text-base text-white">Últimas unidades</span>
+          )
+        )
+      }
+    </div>
+
+    <div class="flex flex-1 flex-col gap-1 p-3 pt-3 sm:p-4">
+      <p class="label text-base text-terracota-oscuro">{product.brand}</p>
+      <h3 id={titleId} class="text-base leading-snug font-bold sm:text-lg">{product.name}</h3>
+      {product.presentation && <p class="text-sm text-mate">{product.presentation}</p>}
+      <p class="mt-auto pt-2 font-display text-2xl text-verde-oscuro">
+        <span class="sr-only">Precio: </span><span data-price-value>{formatPrice(product.price)}</span>
+      </p>
+      <p class="min-h-5 text-sm font-semibold text-verde" data-in-cart></p>
+      <button
+        type="button"
+        class:list={['btn mt-1 w-full', soldOut ? '' : 'btn-green']}
+        data-add
+        disabled={soldOut}
+      >
+        {
+          soldOut ? (
+            <>
+              Agotado<span class="sr-only">: {fullName} {product.presentation}</span>
+            </>
+          ) : (
+            <>
+              <Icon name="plus" class="size-5" />
+              <span data-add-label>Agregar</span>
+              <span class="sr-only"> {fullName} {product.presentation}</span>
+            </>
+          )
+        }
+      </button>
+    </div>
+  </article>
+</li>

@@ -1,0 +1,32 @@
+---
+/**
+ * "Quiénes somos": el texto sale de src/content/quienes-somos.md.
+ * (Es contenido del dueño, no del Sheets.)
+ */
+import { Content, frontmatter } from '../content/quienes-somos.md';
+import Icon from './Icon.astro';
+
+const title: string = typeof frontmatter.title === 'string' ? frontmatter.title : 'Quiénes somos';
+const kicker: string = typeof frontmatter.kicker === 'string' ? frontmatter.kicker : 'Quiénes somos';
+---
+
+<section id="quienes-somos" class="on-dark yerba-texture bg-verde text-crema py-16 sm:py-20" aria-labelledby="quienes-somos-title">
+  <div class="mx-auto grid max-w-5xl gap-10 px-4 md:grid-cols-[1fr_2fr] md:items-center">
+    <div class="flex justify-center" aria-hidden="true">
+      <div class="naipe flex h-56 w-40 -rotate-6 flex-col items-center justify-center bg-crema-claro text-verde-oscuro">
+        <span class="naipe-index top-3 left-3 text-terracota"><span>1</span><Icon name="basto" class="mt-1 size-4" /></span>
+        <span class="naipe-index right-3 bottom-3 rotate-180 text-terracota"><span>1</span><Icon name="basto" class="mt-1 size-4" /></span>
+        <Icon name="mate" class="size-16 text-verde" />
+        <span class="label mt-3 text-lg text-terracota-oscuro">Cebá bien</span>
+        <span class="label text-lg">Jugá mejor</span>
+      </div>
+    </div>
+    <div>
+      <p class="label text-lg text-[#f5c6b5]">{kicker}</p>
+      <h2 id="quienes-somos-title" class="mt-1 font-display text-4xl leading-[1.05] sm:text-5xl">{title}</h2>
+      <div class="prose-ayr mt-5">
+        <Content />
+      </div>
+    </div>
+  </div>
+</section>

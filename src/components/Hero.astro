@@ -1,0 +1,57 @@
+---
+import { BUSINESS, MIN_DELIVERY_AMOUNT, PICKUP_AREA, WHATSAPP_GREETING, WHATSAPP_NUMBER } from '../config';
+import { formatPrice } from '../lib/price';
+import { buildWhatsAppUrl } from '../lib/whatsapp';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
+---
+
+<section id="inicio" class="on-dark yerba-texture relative overflow-hidden bg-verde-oscuro text-crema" aria-labelledby="hero-title">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-8 pb-14 sm:pt-16 md:grid-cols-[1.15fr_1fr] md:pb-24">
+    <div class="order-2 md:order-1">
+      <p class="label text-xl text-[#e9a58f]">Yerba mate · {BUSINESS.city}</p>
+      <h1 id="hero-title" class="mt-2 font-display text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">
+        Mate y truco,<br /><span class="italic text-[#e9a58f]">cosa seria.</span>
+      </h1>
+      <p class="mt-5 max-w-xl text-lg leading-relaxed text-crema/90 sm:text-xl">
+        Las yerbas que te gustan, con delivery en {BUSINESS.city} o retiro en {PICKUP_AREA}. Armá tu pedido acá y lo cerramos por WhatsApp.
+      </p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a href="#catalogo" class="btn btn-primary text-lg sm:px-8">Ver yerbas</a>
+        <a href={whatsappUrl} class="btn btn-outline-light text-lg" target="_blank" rel="noopener noreferrer" data-hero-whatsapp>
+          <Icon name="whatsapp" class="size-5" />
+          Escribinos por WhatsApp
+        </a>
+      </div>
+
+      <ul class="mt-8 grid gap-2 text-base text-crema/90 sm:grid-cols-3 sm:gap-4">
+        <li class="flex items-center gap-2"><Icon name="truck" class="size-5 shrink-0 text-[#e9a58f]" /> Delivery en {BUSINESS.city} (mín. {formatPrice(MIN_DELIVERY_AMOUNT)})</li>
+        <li class="flex items-center gap-2"><Icon name="pin" class="size-5 shrink-0 text-[#e9a58f]" /> Retiro en {PICKUP_AREA}</li>
+        <li class="flex items-center gap-2"><Icon name="cash" class="size-5 shrink-0 text-[#e9a58f]" /> Efectivo o transferencia</li>
+      </ul>
+    </div>
+
+    {/* Abanico de naipes con el logo */}
+    <div class="order-1 flex justify-center md:order-2" aria-hidden="true">
+      <div class="relative h-48 w-36 sm:h-80 sm:w-60">
+        <div class="naipe absolute inset-0 origin-bottom -translate-x-14 -rotate-[14deg] bg-crema-claro sm:-translate-x-16">
+          <span class="naipe-index top-3 left-3 text-terracota"><span>1</span><span class="mt-1"><Icon name="espada" class="size-4" /></span></span>
+          <Icon name="espada" class="absolute top-1/2 left-2.5 size-9 -translate-y-1/2 text-terracota/80 sm:left-3 sm:size-12" />
+        </div>
+        <div class="naipe absolute inset-0 origin-bottom translate-x-14 rotate-[14deg] bg-crema-claro sm:translate-x-16">
+          <span class="naipe-index top-3 left-3 text-verde"><span>7</span><span class="mt-1"><Icon name="oro" class="size-4" /></span></span>
+          <Icon name="oro" class="absolute top-1/2 right-2.5 size-9 -translate-y-1/2 text-mate/80 sm:right-3 sm:size-12" />
+        </div>
+        <div class="naipe absolute inset-0 flex flex-col items-center justify-center bg-crema-claro">
+          <span class="naipe-index top-3 left-3 text-verde-oscuro"><span>A</span><span class="mt-1 text-terracota"><Icon name="basto" class="size-4" /></span></span>
+          <span class="naipe-index right-3 bottom-3 rotate-180 text-verde-oscuro"><span>R</span><span class="mt-1 text-terracota"><Icon name="copa" class="size-4" /></span></span>
+          <Logo size="lg" />
+          <Icon name="mate" class="mt-2 size-8 text-verde sm:mt-3 sm:size-10" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

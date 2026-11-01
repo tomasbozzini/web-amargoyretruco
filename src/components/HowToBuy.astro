@@ -1,0 +1,37 @@
+---
+import { BUSINESS, PICKUP_AREA } from '../config';
+import Icon, { type IconName } from './Icon.astro';
+
+const steps: { title: string; text: string; suit: IconName }[] = [
+  { title: 'Elegís', text: 'Armá tu pedido acá: elegís las yerbas y las cantidades.', suit: 'espada' },
+  { title: 'Mandás el pedido', text: 'Tocás "Pedir por WhatsApp" y nos llega el detalle ya armado.', suit: 'basto' },
+  { title: 'Coordinamos', text: `Te confirmamos precios y stock, y arreglamos el delivery en ${BUSINESS.city} o el retiro en ${PICKUP_AREA}.`, suit: 'oro' },
+  { title: 'Pagás', text: 'En efectivo o por transferencia. Los datos para transferir te los pasamos por WhatsApp.', suit: 'copa' },
+];
+---
+
+<section id="como-comprar" class="bg-crema-claro py-16 sm:py-20" aria-labelledby="como-comprar-title">
+  <div class="mx-auto max-w-6xl px-4">
+    <p class="section-kicker">Cómo comprar</p>
+    <h2 id="como-comprar-title" class="section-title mt-1">¿Cómo se juega?</h2>
+    <p class="mt-3 max-w-2xl text-lg">Cuatro manos y tenés tu yerba. Más fácil que cantar envido.</p>
+
+    <ol class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        steps.map((step, i) => (
+          <li class="naipe px-5 pt-[4.5rem] pb-6">
+            <span class="naipe-index top-3 left-4 text-2xl text-terracota" aria-hidden="true">
+              <span>{i + 1}</span>
+              <Icon name={step.suit} class="mt-1 size-5" />
+            </span>
+            <h3 class="font-display text-2xl">
+              <span class="sr-only">Paso {i + 1}: </span>
+              {step.title}
+            </h3>
+            <p class="mt-2 leading-relaxed">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

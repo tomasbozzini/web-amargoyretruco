@@ -1,0 +1,20 @@
+---
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Página no encontrada | Amargo y Retruco" noindex>
+  <main id="contenido" class="on-dark yerba-texture flex min-h-dvh items-center justify-center bg-verde-oscuro px-4 text-crema">
+    <div class="max-w-md text-center">
+      <Logo size="md" dark />
+      <p class="label mt-6 text-xl text-[#e9a58f]">Error 404</p>
+      <h1 class="mt-2 font-display text-5xl leading-tight">Me voy al mazo</h1>
+      <p class="mt-4 text-lg text-crema/90">Esta página no existe o se la llevó el viento. Volvamos a la mesa.</p>
+      <a href="/" class="btn btn-primary mt-8 text-lg">
+        <Icon name="mate" class="size-5" />
+        Volver al inicio
+      </a>
+    </div>
+  </main>
+</Base>

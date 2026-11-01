@@ -1,0 +1,56 @@
+---
+/**
+ * Preguntas frecuentes con <details>/<summary>: acordeón accesible nativo, sin JS.
+ */
+import { BUSINESS, DELIVERY_FEE_INFO, HOURS_TEXT, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA } from '../config';
+import { formatPrice } from '../lib/price';
+import Icon from './Icon.astro';
+
+const faqs = [
+  {
+    q: '¿Hacen delivery?',
+    a: `Sí, solo dentro de ${BUSINESS.city}, con una compra mínima de ${formatPrice(MIN_DELIVERY_AMOUNT)}. Si tu pedido no llega al mínimo, podés retirarlo en ${PICKUP_AREA}.${DELIVERY_FEE_INFO ? ` ${DELIVERY_FEE_INFO}` : ''}`,
+  },
+  {
+    q: '¿Dónde se retira?',
+    a: `En ${PICKUP_AREA}. El punto exacto te lo pasamos por WhatsApp cuando coordinamos el pedido.`,
+  },
+  {
+    q: '¿Cómo pago?',
+    a: 'En efectivo o por transferencia. Los datos para transferir te los pasamos por WhatsApp.',
+  },
+  {
+    q: '¿Qué horarios tienen?',
+    a: HOURS_TEXT,
+  },
+  {
+    q: '¿Los precios y el stock están actualizados?',
+    a: `Los actualizamos seguido, pero siempre te los confirmamos por WhatsApp antes de cerrar el pedido. ${ORDER_DISCLAIMER}.`,
+  },
+  {
+    q: '¿Y si no encuentro la yerba que busco?',
+    a: 'Escribinos por WhatsApp. Vamos sumando marcas y capaz la conseguimos.',
+  },
+];
+---
+
+<section id="preguntas" class="bg-crema py-16 sm:py-20" aria-labelledby="preguntas-title">
+  <div class="mx-auto max-w-3xl px-4">
+    <p class="section-kicker">Preguntas frecuentes</p>
+    <h2 id="preguntas-title" class="section-title mt-1">Sin mentir, que esto no es truco</h2>
+
+    <div class="mt-8 space-y-3">
+      {
+        faqs.map((item) => (
+          <details class="group naipe">
+            <summary class="flex min-h-14 items-center justify-between gap-4 rounded-2xl px-5 py-4 text-lg font-bold">
+              <span>{item.q}</span>
+              <Icon name="chevron" class="size-5 shrink-0 transition-transform group-open:rotate-180" />
+            </summary>
+            <p class="px-5 pb-5 text-lg leading-relaxed">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
