@@ -57,10 +57,10 @@ const titleId = `p-${product.id}-title`;
       }
       {
         soldOut ? (
-          <span class="label absolute top-2 right-2 rounded-md bg-verde-oscuro px-2 py-1.5 text-base text-crema shadow-md ring-2 ring-crema">Agotado</span>
+          <span class="label absolute top-1.5 right-1.5 rounded px-1.5 pt-[3px] pb-[2px] text-[0.7rem] shadow-sm ring-1 sm:top-2 sm:right-2 sm:px-2 sm:py-1 sm:text-sm bg-verde-oscuro text-crema ring-crema">Agotado</span>
         ) : (
           status === 'low' && (
-            <span class="label absolute top-2 right-2 rounded-md bg-crema px-2 py-1.5 text-base text-terracota-oscuro shadow-md ring-2 ring-terracota-oscuro">Últimas unidades</span>
+            <span class="label absolute top-1.5 right-1.5 rounded px-1.5 pt-[3px] pb-[2px] text-[0.7rem] shadow-sm ring-1 max-[380px]:max-w-[4rem] max-[380px]:text-center max-[380px]:leading-[1.1] sm:top-2 sm:right-2 sm:px-2 sm:py-1 sm:text-sm bg-crema text-terracota-oscuro ring-terracota-oscuro">Últimas unidades</span>
           )
         )
       }
