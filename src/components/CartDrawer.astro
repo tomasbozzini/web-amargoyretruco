@@ -5,7 +5,7 @@
  */
 import { BUSINESS, DELIVERY_FEE_INFO, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA } from '../config';
 import { formatPrice } from '../lib/price';
-import { CUSTOMER_FIELD_MAX } from '../lib/whatsapp';
+import { CUSTOMER_ADDRESS_MAX, CUSTOMER_NAME_MAX } from '../lib/cart';
 import Icon from './Icon.astro';
 ---
 
@@ -90,12 +90,32 @@ import Icon from './Icon.astro';
 
         <div class="mt-6 grid gap-3">
           <div>
-            <label for="cart-name" class="mb-1 block font-bold">Tu nombre <span class="font-normal text-mate">(opcional)</span></label>
-            <input id="cart-name" type="text" class="field" autocomplete="given-name" maxlength={CUSTOMER_FIELD_MAX} data-customer-name />
+            <label for="cart-name" class="mb-1 block font-bold">Tu nombre</label>
+            <input
+              id="cart-name"
+              type="text"
+              class="field"
+              autocomplete="name"
+              autocapitalize="words"
+              maxlength={CUSTOMER_NAME_MAX}
+              aria-required="true"
+              data-customer-name
+            />
           </div>
-          <div>
-            <label for="cart-zone" class="mb-1 block font-bold">Zona o barrio <span class="font-normal text-mate">(opcional)</span></label>
-            <input id="cart-zone" type="text" class="field" autocomplete="off" maxlength={CUSTOMER_FIELD_MAX} data-customer-zone />
+          {/* Solo con delivery (lo muestra/oculta src/scripts/app.ts). */}
+          <div data-address-group hidden>
+            <label for="cart-address" class="mb-1 block font-bold">Dirección de entrega</label>
+            <input
+              id="cart-address"
+              type="text"
+              class="field"
+              autocomplete="street-address"
+              maxlength={CUSTOMER_ADDRESS_MAX}
+              aria-required="true"
+              aria-describedby="cart-address-hint"
+              data-customer-address
+            />
+            <p id="cart-address-hint" class="mt-1 text-sm text-mate">Calle y número (y piso o depto si hace falta). Solo dentro de {BUSINESS.city}.</p>
           </div>
         </div>
         <p class="mt-2 text-xs text-mate">Estos datos no se guardan: solo se agregan al mensaje de WhatsApp.</p>

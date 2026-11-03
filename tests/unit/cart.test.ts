@@ -51,33 +51,54 @@ describe('carrito', () => {
   });
 });
 
-describe('mínimo de delivery', () => {
+describe('validación del pedido', () => {
   const MIN = 20000;
+  const juan = { name: 'Juan', address: 'Av. Colón 123' };
 
   it('pide elegir tipo de entrega', () => {
     const totals = computeTotals(setQuantity(emptyCart(), baldo, 3), catalog);
-    expect(checkOrder(totals, null, MIN)).toMatchObject({ ok: false, reason: 'no-delivery-mode' });
+    expect(checkOrder(totals, null, MIN, juan)).toMatchObject({ ok: false, reason: 'no-delivery-mode' });
   });
 
   it('bloquea delivery por debajo del mínimo e informa cuánto falta', () => {
     const totals = computeTotals(setQuantity(emptyCart(), baldo, 2), catalog); // 17.200
-    expect(checkOrder(totals, 'delivery', MIN)).toEqual({ ok: false, reason: 'below-minimum', missingForDelivery: 2800 });
+    expect(checkOrder(totals, 'delivery', MIN, juan)).toEqual({ ok: false, reason: 'below-minimum', missingForDelivery: 2800 });
   });
 
   it('permite retiro aunque no llegue al mínimo', () => {
     const totals = computeTotals(setQuantity(emptyCart(), baldo, 1), catalog);
-    expect(checkOrder(totals, 'pickup', MIN).ok).toBe(true);
+    expect(checkOrder(totals, 'pickup', MIN, juan).ok).toBe(true);
   });
 
-  it('permite delivery al llegar justo al mínimo', () => {
+  it('permite delivery al llegar al mínimo', () => {
     const totals = computeTotals(setQuantity(emptyCart(), baldo, 3), catalog); // 25.800
-    expect(checkOrder(totals, 'delivery', MIN)).toEqual({ ok: true, reason: null, missingForDelivery: 0 });
-    const exact = { lines: [], count: 0, total: MIN };
-    expect(checkOrder({ ...exact, lines: totals.lines }, 'delivery', MIN).ok).toBe(true);
+    expect(checkOrder(totals, 'delivery', MIN, juan)).toEqual({ ok: true, reason: null, missingForDelivery: 0 });
+    const exact = { lines: totals.lines, count: 3, total: MIN };
+    expect(checkOrder(exact, 'delivery', MIN, juan).ok).toBe(true);
   });
 
   it('carrito vacío no se puede enviar', () => {
-    expect(checkOrder(computeTotals(emptyCart(), catalog), 'pickup', MIN)).toMatchObject({ ok: false, reason: 'empty' });
+    expect(checkOrder(computeTotals(emptyCart(), catalog), 'pickup', MIN, juan)).toMatchObject({ ok: false, reason: 'empty' });
+  });
+
+  it('el nombre es obligatorio siempre (retiro y delivery)', () => {
+    const totals = computeTotals(setQuantity(emptyCart(), baldo, 3), catalog);
+    for (const name of ['', '   ', 'J', '\n\t']) {
+      expect(checkOrder(totals, 'pickup', MIN, { name, address: '' }).reason).toBe('missing-name');
+      expect(checkOrder(totals, 'delivery', MIN, { name, address: 'Av. Colón 123' }).reason).toBe('missing-name');
+    }
+  });
+
+  it('la dirección es obligatoria solo con delivery', () => {
+    const totals = computeTotals(setQuantity(emptyCart(), baldo, 3), catalog);
+    expect(checkOrder(totals, 'delivery', MIN, { name: 'Juan', address: '' }).reason).toBe('missing-address');
+    expect(checkOrder(totals, 'delivery', MIN, { name: 'Juan', address: '  x ' }).reason).toBe('missing-address');
+    expect(checkOrder(totals, 'pickup', MIN, { name: 'Juan', address: '' }).ok).toBe(true);
+  });
+
+  it('el mínimo de delivery se avisa antes que los datos faltantes', () => {
+    const totals = computeTotals(setQuantity(emptyCart(), baldo, 1), catalog);
+    expect(checkOrder(totals, 'delivery', MIN, { name: '', address: '' }).reason).toBe('below-minimum');
   });
 });
 

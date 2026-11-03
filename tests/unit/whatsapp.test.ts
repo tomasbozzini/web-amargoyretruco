@@ -30,7 +30,7 @@ describe('buildOrderMessage', () => {
       ]),
       delivery: 'delivery',
       customerName: 'Juan',
-      customerZone: 'Centro',
+      customerAddress: 'Av. Colón 123',
     });
     expect(message).toBe(
       [
@@ -42,32 +42,39 @@ describe('buildOrderMessage', () => {
         '*Total: $ 24.200*',
         'Entrega: Delivery en Tandil',
         'Nombre: Juan',
-        'Zona/barrio: Centro',
+        'Dirección: Av. Colón 123',
         '',
         `_${DISCLAIMER}._`,
       ].join('\n'),
     );
   });
 
-  it('retiro, sin nombre ni zona', () => {
-    const message = buildOrderMessage({ ...base, totals: totalsFor([[baldo, 1]]), delivery: 'pickup' });
-    expect(message).toContain('Entrega: Retiro en zona Campus universitario');
-    expect(message).not.toContain('Nombre:');
-    expect(message).not.toContain('Zona/barrio:');
-    expect(message).toContain(DISCLAIMER);
-  });
-
-  it('limpia nombre y zona (saltos de línea, largo)', () => {
+  it('retiro: va el nombre y nunca la dirección', () => {
     const message = buildOrderMessage({
       ...base,
       totals: totalsFor([[baldo, 1]]),
       delivery: 'pickup',
+      customerName: 'Juana',
+      customerAddress: 'Av. Colón 123',
+    });
+    expect(message).toContain('Entrega: Retiro en zona Campus universitario');
+    expect(message).toContain('Nombre: Juana');
+    expect(message).not.toContain('Dirección:');
+    expect(message).not.toContain('Colón');
+    expect(message).toContain(DISCLAIMER);
+  });
+
+  it('limpia nombre y dirección (saltos de línea, largo)', () => {
+    const message = buildOrderMessage({
+      ...base,
+      totals: totalsFor([[baldo, 1]]),
+      delivery: 'delivery',
       customerName: 'Ana\n\nTotal: $ 1',
-      customerZone: 'x'.repeat(300),
+      customerAddress: 'x'.repeat(300),
     });
     expect(message).toContain('Nombre: Ana Total: $ 1');
-    const zoneLine = message.split('\n').find((l) => l.startsWith('Zona/barrio:')) ?? '';
-    expect(zoneLine.length).toBeLessThanOrEqual('Zona/barrio: '.length + 60);
+    const addressLine = message.split('\n').find((l) => l.startsWith('Dirección:')) ?? '';
+    expect(addressLine.length).toBeLessThanOrEqual('Dirección: '.length + 120);
   });
 });
 

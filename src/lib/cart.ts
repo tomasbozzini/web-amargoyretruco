@@ -6,6 +6,8 @@
  * confirmación.
  */
 
+import { cleanText } from './text';
+
 export type DeliveryMode = 'delivery' | 'pickup';
 
 export interface CartProduct {
@@ -79,18 +81,44 @@ export function computeTotals(state: CartState, products: Map<string, CartProduc
   return { lines, count, total: Math.round(total * 100) / 100 };
 }
 
+/** Datos que escribe quien pide. No se guardan: solo van en el mensaje de WhatsApp. */
+export interface CustomerInfo {
+  name: string;
+  /** Solo se pide (y se usa) con delivery. */
+  address: string;
+}
+
+export const CUSTOMER_NAME_MAX = 60;
+export const CUSTOMER_ADDRESS_MAX = 120;
+const MIN_NAME_LENGTH = 2;
+const MIN_ADDRESS_LENGTH = 4;
+
 export interface OrderCheck {
   ok: boolean;
-  reason: 'empty' | 'no-delivery-mode' | 'below-minimum' | null;
+  reason: 'empty' | 'no-delivery-mode' | 'below-minimum' | 'missing-name' | 'missing-address' | null;
   /** Cuánto falta para llegar al mínimo de delivery (0 si no aplica). */
   missingForDelivery: number;
 }
 
-export function checkOrder(totals: CartTotals, delivery: DeliveryMode | null, minDelivery: number): OrderCheck {
+/**
+ * Decide si el pedido se puede mandar:
+ * productos, tipo de entrega, mínimo de delivery, nombre (siempre) y dirección (solo delivery).
+ */
+export function checkOrder(
+  totals: CartTotals,
+  delivery: DeliveryMode | null,
+  minDelivery: number,
+  customer: CustomerInfo,
+): OrderCheck {
   const missing = Math.max(0, Math.round((minDelivery - totals.total) * 100) / 100);
-  if (totals.lines.length === 0) return { ok: false, reason: 'empty', missingForDelivery: missing };
-  if (!delivery) return { ok: false, reason: 'no-delivery-mode', missingForDelivery: missing };
-  if (delivery === 'delivery' && missing > 0) return { ok: false, reason: 'below-minimum', missingForDelivery: missing };
+  const fail = (reason: NonNullable<OrderCheck['reason']>): OrderCheck => ({ ok: false, reason, missingForDelivery: missing });
+  if (totals.lines.length === 0) return fail('empty');
+  if (!delivery) return fail('no-delivery-mode');
+  if (delivery === 'delivery' && missing > 0) return fail('below-minimum');
+  if (cleanText(customer.name, CUSTOMER_NAME_MAX).length < MIN_NAME_LENGTH) return fail('missing-name');
+  if (delivery === 'delivery' && cleanText(customer.address, CUSTOMER_ADDRESS_MAX).length < MIN_ADDRESS_LENGTH) {
+    return fail('missing-address');
+  }
   return { ok: true, reason: null, missingForDelivery: delivery === 'delivery' ? 0 : missing };
 }
 

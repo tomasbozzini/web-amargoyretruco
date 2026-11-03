@@ -142,8 +142,8 @@ Regenera `public/og-image.png` (la imagen que aparece al compartir el link en Wh
 1. La persona elige yerbas y cantidades (con un máximo igual al stock).
 2. En el carrito elige **Delivery sin cargo en Tandil** o **Retiro en zona Campus universitario**.
    - Si elige delivery y el total no llega a `MIN_DELIVERY_AMOUNT`, la web le muestra cuánto falta, **bloquea el pedido con delivery** y le ofrece cambiar a retiro.
-3. Nombre y zona/barrio son opcionales y **no se guardan**: solo se agregan al mensaje.
-4. El botón **Pedir por WhatsApp** abre `wa.me/5491133907596` con el mensaje armado: saludo, productos (cantidad × producto, presentación, precio), total, entrega, nombre, zona y la leyenda **"Precios y stock sujetos a confirmación por WhatsApp"**.
+3. El **nombre es obligatorio**. Si elige delivery, también tiene que poner la **dirección de entrega**; si elige retiro, solo el nombre. Hasta completarlos, el botón de WhatsApp no se habilita. Estos datos **no se guardan**: solo se agregan al mensaje.
+4. El botón **Pedir por WhatsApp** abre `wa.me/5491133907596` con el mensaje armado: saludo, productos (cantidad × producto, presentación, precio), total, entrega, nombre, dirección (solo delivery) y la leyenda **"Precios y stock sujetos a confirmación por WhatsApp"**.
 
 El pedido **no se guarda**: vive solo mientras la página está abierta. Si se recarga la página o se vuelve a entrar otro día, arranca vacío. Los precios salen del catálogo cargado en la página. Como el mensaje se arma en el navegador, alguien podría modificarlo: por eso siempre lleva la leyenda de confirmación y los precios se confirman por WhatsApp.
 

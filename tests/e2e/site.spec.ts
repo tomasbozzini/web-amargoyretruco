@@ -152,27 +152,47 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
   await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
   await expect(orderLink(page)).not.toHaveAttribute('href', /.+/);
 
-  // Ofrece cambiar a retiro.
+  // Ofrece cambiar a retiro. Con retiro solo se pide el nombre (obligatorio).
   await cart.getByRole('button', { name: 'Cambiar a retiro en zona Campus universitario' }).click();
   await expect(cart.getByLabel(/Retiro en zona Campus universitario/)).toBeChecked();
   await expect(cart.locator('[data-min-warning]')).toBeHidden();
+  await expect(cart.getByLabel('Tu nombre', { exact: true })).toBeVisible();
+  await expect(cart.getByLabel('Dirección de entrega')).toBeHidden();
+  await expect(cart.getByText('(opcional)')).toHaveCount(0);
+  await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('[data-cart-help]')).toHaveText('Escribí tu nombre para mandar el pedido.');
+
+  // Tocar el botón sin nombre lleva al campo y lo marca.
+  await orderLink(page).click({ force: true }); // aria-disabled: Playwright no lo toca sin force
+  await expect(cart.getByLabel('Tu nombre', { exact: true })).toBeFocused();
+  await expect(cart.getByLabel('Tu nombre', { exact: true })).toHaveAttribute('aria-invalid', 'true');
+
+  await cart.getByLabel('Tu nombre', { exact: true }).fill('Juan');
+  await expect(cart.getByLabel('Tu nombre', { exact: true })).not.toHaveAttribute('aria-invalid', 'true');
   await expect(orderLink(page)).not.toHaveAttribute('aria-disabled', 'true');
   let message = await orderMessage(page);
   expect(message).toContain('Entrega: Retiro en zona Campus universitario');
   expect(message).toContain('*Total: $ 17.200*');
+  expect(message).toContain('Nombre: Juan');
+  expect(message).not.toContain('Dirección:');
   expect(message).toContain(DISCLAIMER);
 
-  // Vuelve a delivery y suma uno: $ 25.800 supera el mínimo.
+  // Vuelve a delivery y suma uno: $ 25.800 supera el mínimo, pero falta la dirección.
   await cart.getByLabel(/Delivery sin cargo en Tandil/).check();
   await cart.getByRole('button', { name: 'Sumar uno de Baldo Tradicional' }).click();
   await expect(cart.getByLabel('Cantidad: 3')).toBeVisible();
   expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe('$ 25.800');
   await expect(cart.locator('[data-min-warning]')).toBeHidden();
-  await expect(orderLink(page)).not.toHaveAttribute('aria-disabled', 'true');
+  await expect(cart.getByLabel('Dirección de entrega')).toBeVisible();
+  await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('[data-cart-help]')).toHaveText('Escribí la dirección de entrega para el delivery.');
+  await orderLink(page).click({ force: true }); // aria-disabled: Playwright no lo toca sin force
+  await expect(cart.getByLabel('Dirección de entrega')).toBeFocused();
+  await expect(cart.getByLabel('Dirección de entrega')).toHaveAttribute('aria-invalid', 'true');
 
-  // Nombre y zona opcionales.
-  await cart.getByLabel(/Tu nombre/).fill('Juan');
-  await cart.getByLabel(/Zona o barrio/).fill('Centro');
+  // Con nombre y dirección, se puede pedir.
+  await cart.getByLabel('Dirección de entrega').fill('Av. Colón 123');
+  await expect(orderLink(page)).not.toHaveAttribute('aria-disabled', 'true');
   message = await orderMessage(page);
   expect(message).toBe(
     [
@@ -183,7 +203,7 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
       '*Total: $ 25.800*',
       'Entrega: Delivery en Tandil',
       'Nombre: Juan',
-      'Zona/barrio: Centro',
+      'Dirección: Av. Colón 123',
       '',
       `_${DISCLAIMER}._`,
     ].join('\n'),

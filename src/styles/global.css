@@ -130,6 +130,10 @@
   .field:focus-visible {
     @apply border-verde;
   }
+  /* Campo obligatorio sin completar (se marca al intentar mandar el pedido). */
+  .field[aria-invalid='true'] {
+    @apply border-terracota-oscuro bg-[#fdf3ef];
+  }
 
   /* Texto de Markdown ("Quiénes somos"). */
   .prose-ayr p {

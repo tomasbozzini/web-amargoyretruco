@@ -15,6 +15,7 @@ import {
   setQuantity,
   type CartProduct,
   type CartState,
+  type CustomerInfo,
   type DeliveryMode,
 } from '../lib/cart';
 import { formatPrice } from '../lib/price';
@@ -227,7 +228,8 @@ const minMissing = $('[data-min-missing]');
 const helpNode = $('[data-cart-help]');
 const orderLink = $<HTMLAnchorElement>('[data-whatsapp-order]');
 const nameInput = $<HTMLInputElement>('[data-customer-name]');
-const zoneInput = $<HTMLInputElement>('[data-customer-zone]');
+const addressInput = $<HTMLInputElement>('[data-customer-address]');
+const addressGroup = $('[data-address-group]');
 const deliveryOptions = $$<HTMLInputElement>('[data-delivery-option]');
 
 function openCart(): void {
@@ -266,8 +268,17 @@ $('[data-switch-pickup]')?.addEventListener('click', () => {
   announceInCart(`Cambiaste a retiro en ${config.pickup}.`);
 });
 
-nameInput?.addEventListener('input', updateOrderLink);
-zoneInput?.addEventListener('input', updateOrderLink);
+/** Nombre (siempre) y dirección (solo delivery): no se guardan, solo van en el mensaje. */
+function customer(): CustomerInfo {
+  return { name: nameInput?.value ?? '', address: addressInput?.value ?? '' };
+}
+
+for (const input of [nameInput, addressInput]) {
+  input?.addEventListener('input', () => {
+    input.removeAttribute('aria-invalid');
+    updateOrderLink();
+  });
+}
 
 $('[data-cart-clear]')?.addEventListener('click', () => {
   if (!window.confirm('¿Vaciar el pedido?')) return;
@@ -278,9 +289,14 @@ $('[data-cart-clear]')?.addEventListener('click', () => {
 orderLink?.addEventListener('click', (event) => {
   if (orderLink.getAttribute('aria-disabled') === 'true') {
     event.preventDefault();
-    const check = checkOrder(computeTotals(cart, products), cart.delivery, config.minDelivery);
+    const check = checkOrder(computeTotals(cart, products), cart.delivery, config.minDelivery, customer());
     if (check.reason === 'no-delivery-mode') deliveryOptions[0]?.focus();
     if (check.reason === 'below-minimum') $<HTMLButtonElement>('[data-switch-pickup]')?.focus();
+    const missingField = check.reason === 'missing-name' ? nameInput : check.reason === 'missing-address' ? addressInput : null;
+    if (missingField) {
+      missingField.setAttribute('aria-invalid', 'true');
+      missingField.focus();
+    }
   }
 });
 
@@ -372,7 +388,7 @@ function renderLines(): void {
 function updateOrderLink(): void {
   if (!orderLink) return;
   const totals = computeTotals(cart, products);
-  const check = checkOrder(totals, cart.delivery, config.minDelivery);
+  const check = checkOrder(totals, cart.delivery, config.minDelivery, customer());
 
   if (check.ok && cart.delivery) {
     const message = buildOrderMessage({
@@ -382,7 +398,7 @@ function updateOrderLink(): void {
       pickupArea: config.pickup,
       city: config.city,
       customerName: nameInput?.value,
-      customerZone: zoneInput?.value,
+      customerAddress: addressInput?.value,
       disclaimer: config.disclaimer,
     });
     orderLink.href = buildWhatsAppUrl(config.phone, message);
@@ -402,14 +418,18 @@ function updateOrderLink(): void {
         ? 'Elegí si lo querés por delivery o lo retirás.'
         : check.reason === 'below-minimum'
           ? `Para delivery te faltan ${formatPrice(check.missingForDelivery)}. Podés cambiar a retiro.`
-          : 'Se abre WhatsApp con tu pedido listo para enviar.';
+          : check.reason === 'missing-name'
+            ? 'Escribí tu nombre para mandar el pedido.'
+            : check.reason === 'missing-address'
+              ? 'Escribí la dirección de entrega para el delivery.'
+              : 'Se abre WhatsApp con tu pedido listo para enviar.';
   }
 }
 
 function renderCart(): void {
   const totals = computeTotals(cart, products);
   const isEmpty = totals.lines.length === 0;
-  const check = checkOrder(totals, cart.delivery, config.minDelivery);
+  const check = checkOrder(totals, cart.delivery, config.minDelivery, customer());
 
   if (emptyState) emptyState.hidden = !isEmpty;
   if (formSection) formSection.hidden = isEmpty;
@@ -420,6 +440,8 @@ function renderCart(): void {
   if (totalNode) totalNode.textContent = formatPrice(totals.total);
 
   for (const option of deliveryOptions) option.checked = option.value === cart.delivery;
+  // Con delivery se pide la dirección; con retiro, solo el nombre.
+  if (addressGroup) addressGroup.hidden = cart.delivery !== 'delivery';
 
   const belowMinimum = check.reason === 'below-minimum';
   if (minWarning) minWarning.hidden = !belowMinimum;

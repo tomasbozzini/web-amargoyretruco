@@ -1,7 +1,7 @@
 /**
  * Armado del mensaje de pedido para WhatsApp (se arma en el navegador).
  */
-import type { CartTotals, DeliveryMode } from './cart';
+import { CUSTOMER_ADDRESS_MAX, CUSTOMER_NAME_MAX, type CartTotals, type DeliveryMode } from './cart';
 import { formatPricePlain } from './price';
 import { cleanText, fullProductName } from './text';
 
@@ -12,15 +12,14 @@ export interface OrderMessageInput {
   pickupArea: string;
   city: string;
   customerName?: string;
-  customerZone?: string;
+  /** Solo se incluye si la entrega es delivery. */
+  customerAddress?: string;
   disclaimer: string;
 }
 
-export const CUSTOMER_FIELD_MAX = 60;
-
 export function buildOrderMessage(input: OrderMessageInput): string {
-  const name = cleanText(input.customerName ?? '', CUSTOMER_FIELD_MAX);
-  const zone = cleanText(input.customerZone ?? '', CUSTOMER_FIELD_MAX);
+  const name = cleanText(input.customerName ?? '', CUSTOMER_NAME_MAX);
+  const address = input.delivery === 'delivery' ? cleanText(input.customerAddress ?? '', CUSTOMER_ADDRESS_MAX) : '';
 
   const items = input.totals.lines.map(({ product, quantity, lineTotal }) => {
     const label = fullProductName(product.brand, product.name);
@@ -42,7 +41,7 @@ export function buildOrderMessage(input: OrderMessageInput): string {
     `Entrega: ${deliveryText}`,
   ];
   if (name) lines.push(`Nombre: ${name}`);
-  if (zone) lines.push(`Zona/barrio: ${zone}`);
+  if (address) lines.push(`Dirección: ${address}`);
   lines.push('', `_${input.disclaimer}._`);
 
   return lines.join('\n');
