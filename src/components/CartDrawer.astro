@@ -3,7 +3,7 @@
  * Panel del carrito (dialog nativo: atrapa el foco y se cierra con Esc).
  * El contenido de la lista lo arma src/scripts/app.ts con textContent.
  */
-import { BUSINESS, DELIVERY_FEE_INFO, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, type SalesMode } from '../config';
+import { BUSINESS, CART_DELIVERY_NOTE, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, type SalesMode } from '../config';
 import { formatPrice } from '../lib/price';
 import { CUSTOMER_ADDRESS_MAX, CUSTOMER_NAME_MAX } from '../lib/cart';
 import Icon from './Icon.astro';
@@ -66,7 +66,7 @@ const preorder = salesMode === 'encargo';
         </dl>
         <div class="mt-1 flex items-start justify-between gap-3">
           <p class="text-sm text-mate">
-            {DELIVERY_FEE_INFO ?? 'Si elegís delivery, el envío lo coordinamos por WhatsApp.'}
+            {CART_DELIVERY_NOTE}
           </p>
           <button type="button" class="min-h-11 shrink-0 rounded-lg px-2 text-sm font-semibold text-terracota-oscuro underline underline-offset-4 hover:bg-crema" data-cart-clear>
             {preorder ? 'Vaciar encargo' : 'Vaciar pedido'}

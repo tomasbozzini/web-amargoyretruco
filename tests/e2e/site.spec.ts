@@ -145,6 +145,7 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
   await expect(cart).toBeVisible();
   await expect(cart.locator('[data-cart-lines] li')).toHaveCount(1);
   expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe('$ 17.200');
+  await expect(cart.getByText(/El delivery es sin cargo con una compra mínima de \$\s20\.000\./)).toBeVisible();
 
   // Sin elegir entrega: no se puede pedir.
   await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');

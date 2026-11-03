@@ -7,6 +7,8 @@
  * CATALOG_CSV_URL (ver README), no acá.
  */
 
+import { formatPrice } from './lib/price';
+
 export const BUSINESS = {
   name: 'Amargo y Retruco',
   /** Versión corta del nombre, la del logo. */
@@ -59,6 +61,9 @@ export const BUSINESS_HOURS: string | null = null;
  * `null` = no se informa en la web (se coordina por WhatsApp).
  */
 export const DELIVERY_FEE_INFO: string | null = 'El delivery es sin cargo.';
+
+/** Nota debajo del total en el carrito (toma el mínimo de MIN_DELIVERY_AMOUNT). */
+export const CART_DELIVERY_NOTE = `El delivery es sin cargo con una compra mínima de ${formatPrice(MIN_DELIVERY_AMOUNT)}.`;
 
 export const PAYMENT_METHODS = ['Efectivo', 'Transferencia'] as const;
 
