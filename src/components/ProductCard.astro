@@ -22,6 +22,7 @@ const soldOut = status === 'soldout';
 const fullName = fullProductName(product.brand, product.name);
 const searchText = normalizeForSearch(`${product.brand} ${product.name} ${product.presentation}`);
 const titleId = `p-${product.id}-title`;
+const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
 ---
 
 <li class="flex" data-product-item>
@@ -73,7 +74,7 @@ const titleId = `p-${product.id}-title`;
       <p class="mt-auto pt-2 font-display text-2xl text-verde-oscuro">
         <span class="sr-only">Precio: </span><span data-price-value>{formatPrice(product.price)}</span>
       </p>
-      <p class="min-h-5 text-sm font-semibold text-verde" data-in-cart></p>
+      <p class="min-h-5 text-sm font-semibold text-terracota-oscuro" data-in-cart></p>
       <button
         type="button"
         class:list={['btn mt-1 w-full', soldOut ? '' : 'btn-green']}
@@ -83,17 +84,44 @@ const titleId = `p-${product.id}-title`;
         {
           soldOut ? (
             <>
-              Agotado<span class="sr-only">: {fullName} {product.presentation}</span>
+              Agotado<span class="sr-only">: {itemLabel}</span>
             </>
           ) : (
             <>
               <Icon name="plus" class="size-5" />
-              <span data-add-label>Agregar</span>
-              <span class="sr-only"> {fullName} {product.presentation}</span>
+              <span>Agregar</span>
+              <span class="sr-only"> {itemLabel}</span>
             </>
           )
         }
       </button>
+      {
+        /* Al agregar, el botón se reemplaza por este selector de cantidad (lo maneja src/scripts/app.ts). */
+        !soldOut && (
+          <div class="mt-1 flex min-h-12 items-stretch rounded-xl border-2 border-verde bg-white" data-card-stepper hidden>
+            <button
+              type="button"
+              class="inline-flex w-12 shrink-0 items-center justify-center rounded-l-[10px] text-verde hover:bg-verde/10"
+              aria-label={`Restar uno de ${itemLabel}`}
+              data-card-decrease
+            >
+              <Icon name="minus" class="size-5" />
+            </button>
+            <span class="flex flex-1 items-center justify-center text-lg font-bold text-verde-oscuro">
+              <span class="sr-only">En tu pedido: </span>
+              <span data-card-qty>0</span>
+            </span>
+            <button
+              type="button"
+              class="inline-flex w-12 shrink-0 items-center justify-center rounded-r-[10px] text-verde hover:bg-verde/10 disabled:cursor-not-allowed disabled:text-[#9a9a92] disabled:hover:bg-transparent"
+              aria-label={`Sumar uno de ${itemLabel}`}
+              data-card-increase
+            >
+              <Icon name="plus" class="size-5" />
+            </button>
+          </div>
+        )
+      }
     </div>
   </article>
 </li>

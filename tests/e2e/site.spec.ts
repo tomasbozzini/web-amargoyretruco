@@ -126,12 +126,12 @@ test('filtros por marca, buscador y orden por precio', async ({ page }) => {
 
 test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', async ({ page, context }) => {
   await page.goto('/');
-  const addBaldo = card(page, ID.baldo500).locator('[data-add]');
-  await addBaldo.click();
-  await addBaldo.click();
+  const baldo = card(page, ID.baldo500);
+  await baldo.locator('[data-add]').click();
+  await baldo.locator('[data-card-increase]').click();
 
   await expect(page.locator('[data-cart-count]')).toHaveText('2');
-  await expect(card(page, ID.baldo500).locator('[data-in-cart]')).toHaveText('En tu pedido: 2');
+  await expect(baldo.locator('[data-card-qty]')).toHaveText('2');
   await expect(page.locator('[data-mobile-cart-bar]')).toBeVisible();
   expect(norm(await page.locator('[data-mobile-cart-summary]').innerText())).toBe('2 · $ 17.200');
 
@@ -218,11 +218,12 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
 
 test('stock: no deja pasar del stock y lo agotado no se agrega', async ({ page }) => {
   await page.goto('/');
-  const add = card(page, ID.especial).locator('[data-add]'); // stock 2
-  await add.click();
-  await add.click();
-  await expect(add).toBeDisabled();
-  await expect(add).toContainText('Máximo disponible');
+  const especial = card(page, ID.especial); // stock 2
+  await especial.locator('[data-add]').click();
+  await especial.getByRole('button', { name: 'Sumar uno de Canarias Edición Especial 500 g' }).click();
+  await expect(especial.locator('[data-card-qty]')).toHaveText('2');
+  await expect(especial.locator('[data-card-increase]')).toBeDisabled();
+  await expect(especial.locator('[data-in-cart]')).toHaveText('Máximo disponible: 2');
 
   await page.locator('[data-cart-open]').first().click();
   const cart = page.locator('[data-cart-dialog]');
@@ -235,8 +236,50 @@ test('stock: no deja pasar del stock y lo agotado no se agrega', async ({ page }
   await cart.getByRole('button', { name: 'Quitar Canarias Edición Especial del pedido' }).click();
   await expect(cart.getByText('Todavía no tenés cartas en la mano')).toBeVisible();
   await page.keyboard.press('Escape');
+  // La tarjeta se sincroniza con el carrito: vuelve el botón "Agregar".
+  await expect(especial.locator('[data-add]')).toBeVisible();
+  await expect(especial.locator('[data-card-stepper]')).toBeHidden();
 
+  // Agotado: botón deshabilitado y sin selector de cantidad.
   await expect(card(page, ID.reiVerde).locator('[data-add]')).toBeDisabled();
+  await expect(card(page, ID.reiVerde).locator('[data-card-stepper]')).toHaveCount(0);
+});
+
+test('selector − cantidad + en la tarjeta, respetando el stock', async ({ page }) => {
+  await page.goto('/');
+  const serena = card(page, ID.serena); // stock 3
+  const add = serena.locator('[data-add]');
+  const plus = serena.locator('[data-card-increase]');
+  const minus = serena.locator('[data-card-decrease]');
+  const qty = serena.locator('[data-card-qty]');
+
+  await expect(serena.locator('[data-card-stepper]')).toBeHidden();
+  await add.click();
+  await expect(add).toBeHidden();
+  await expect(serena.locator('[data-card-stepper]')).toBeVisible();
+  await expect(qty).toHaveText('1');
+  await expect(plus).toBeFocused();
+  await expect(minus).toHaveAccessibleName('Quitar Canarias Serena 500 g del pedido');
+
+  await plus.click();
+  await expect(minus).toHaveAccessibleName('Restar uno de Canarias Serena 500 g');
+  await plus.click();
+  await expect(qty).toHaveText('3');
+  await expect(plus).toBeDisabled();
+  await expect(serena.locator('[data-in-cart]')).toHaveText('Máximo disponible: 3');
+  await expect(minus).toBeFocused(); // al deshabilitarse el "+", el foco pasa al "−"
+  await expect(page.locator('[data-cart-count]')).toHaveText('3');
+
+  await minus.click();
+  await expect(qty).toHaveText('2');
+  await expect(plus).toBeEnabled();
+  await expect(serena.locator('[data-in-cart]')).toHaveText('');
+  await minus.click();
+  await minus.click();
+  await expect(serena.locator('[data-card-stepper]')).toBeHidden();
+  await expect(add).toBeVisible();
+  await expect(add).toBeFocused();
+  await expect(page.locator('[data-cart-count]')).toBeHidden();
 });
 
 test('al recargar la página, el pedido se reinicia', async ({ page }) => {

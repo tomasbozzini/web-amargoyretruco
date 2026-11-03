@@ -185,21 +185,64 @@ $('[data-clear-filters]')?.addEventListener('click', () => {
 /* Botones "Agregar"                                                   */
 /* ------------------------------------------------------------------ */
 
+const pageAnnounce = $('[data-page-announce]');
+function announce(message: string): void {
+  if (!pageAnnounce) return;
+  pageAnnounce.textContent = '';
+  window.setTimeout(() => {
+    pageAnnounce.textContent = message;
+  }, 50);
+}
+
+/** "Baldo Tradicional 500 g" */
+function itemLabel(product: CartProduct): string {
+  return [fullProductName(product.brand, product.name), product.presentation].filter(Boolean).join(' ');
+}
+
+/*
+ * "Agregar" suma 1 y se reemplaza por el selector − cantidad +, que respeta el
+ * stock. Con 1 unidad, el "−" saca el producto y vuelve el botón "Agregar".
+ */
 for (const card of cards) {
-  const button = $<HTMLButtonElement>('[data-add]', card);
   const product = products.get(card.dataset.id ?? '');
-  if (!button || !product) continue;
-  button.addEventListener('click', () => {
-    const before = cart.items[product.id] ?? 0;
+  const addButton = $<HTMLButtonElement>('[data-add]', card);
+  const decrease = $<HTMLButtonElement>('[data-card-decrease]', card);
+  const increase = $<HTMLButtonElement>('[data-card-increase]', card);
+  if (!product || !addButton) continue;
+  const label = itemLabel(product);
+
+  addButton.addEventListener('click', () => {
     const next = addItem(cart, product);
-    const after = next.items[product.id] ?? 0;
-    const label = fullProductName(product.brand, product.name);
-    if (after === before) {
-      showToast(`No tenemos más stock de ${label}.`);
+    if ((next.items[product.id] ?? 0) === (cart.items[product.id] ?? 0)) {
+      showToast(`No tenemos más stock de ${fullProductName(product.brand, product.name)}.`);
       return;
     }
     commit(next);
-    showToast(`¡Quiero! Sumaste ${label} al pedido.`);
+    showToast(`¡Quiero! Sumaste ${fullProductName(product.brand, product.name)} al pedido.`);
+    // El botón quedó oculto: el foco pasa al "+" (o al "−" si ya no hay más stock).
+    (increase && !increase.disabled ? increase : decrease)?.focus();
+  });
+
+  increase?.addEventListener('click', () => {
+    const current = cart.items[product.id] ?? 0;
+    const next = addItem(cart, product);
+    const quantity = next.items[product.id] ?? 0;
+    if (quantity === current) return;
+    commit(next);
+    announce(quantity >= product.stock ? `${label}: ${quantity}. Es el máximo disponible.` : `${label}: ${quantity} en tu pedido.`);
+    if (increase.disabled) decrease?.focus();
+  });
+
+  decrease?.addEventListener('click', () => {
+    const next = setQuantity(cart, product, (cart.items[product.id] ?? 0) - 1);
+    commit(next);
+    const quantity = next.items[product.id] ?? 0;
+    if (quantity === 0) {
+      announce(`Quitaste ${label} del pedido.`);
+      addButton.focus();
+    } else {
+      announce(`${label}: ${quantity} en tu pedido.`);
+    }
   });
 }
 
@@ -477,15 +520,21 @@ function renderIndicators(): void {
     const product = products.get(card.dataset.id ?? '');
     if (!product) continue;
     const quantity = cart.items[product.id] ?? 0;
+    const atMax = quantity > 0 && quantity >= product.stock;
     const inCart = $('[data-in-cart]', card);
-    if (inCart) inCart.textContent = quantity > 0 ? `En tu pedido: ${quantity}` : '';
-    const button = $<HTMLButtonElement>('[data-add]', card);
-    const label = $('[data-add-label]', card);
-    if (button && product.stock > 0) {
-      const atMax = quantity >= product.stock;
-      button.disabled = atMax;
-      if (label) label.textContent = atMax ? 'Máximo disponible' : 'Agregar';
-    }
+    if (inCart) inCart.textContent = atMax ? `Máximo disponible: ${product.stock}` : '';
+
+    const addButton = $<HTMLButtonElement>('[data-add]', card);
+    const stepper = $('[data-card-stepper]', card);
+    if (!addButton || !stepper || product.stock <= 0) continue;
+    addButton.hidden = quantity > 0;
+    stepper.hidden = quantity === 0;
+    const qty = $('[data-card-qty]', card);
+    if (qty) qty.textContent = String(quantity);
+    const increase = $<HTMLButtonElement>('[data-card-increase]', card);
+    if (increase) increase.disabled = atMax;
+    const decrease = $('[data-card-decrease]', card);
+    decrease?.setAttribute('aria-label', quantity === 1 ? `Quitar ${itemLabel(product)} del pedido` : `Restar uno de ${itemLabel(product)}`);
   }
 }
 
