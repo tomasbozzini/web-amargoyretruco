@@ -27,7 +27,7 @@
       {/* Luz suave de fondo para que se vea el termo negro */}
       <circle cx="125" cy="128" r="112" fill="url(#intro-luz)" />
 
-      {/* Termo negro con manija y pico cebador rojo (se inclina, ceba y vuelve) */}
+      {/* Termo negro con el logo A y R, manija y pico cebador (se inclina, ceba y vuelve) */}
       <g class="intro-termo">
         <g transform="translate(12 -1) rotate(70 61 120)">
           {/* manija */}
@@ -36,15 +36,20 @@
           {/* cuerpo */}
           <rect x="38" y="72" width="46" height="100" rx="10" fill="url(#intro-termo-cuerpo)" stroke="#4d5a52" stroke-width="1" />
           <rect x="43" y="78" width="4" height="86" rx="2" fill="#ffffff" opacity="0.1" />
-          {/* aro */}
+          {/* logo A y R (tipografía de títulos, "y" en cursiva terracota) */}
+          <rect x="38" y="106" width="46" height="1.4" fill="#f3ebd8" opacity="0.85" />
+          <text x="61" y="129" text-anchor="middle" class="font-display" font-size="18" fill="#f3ebd8">A<tspan dx="1.6" fill="#e07a5c" font-style="italic">y</tspan><tspan dx="1.4">R</tspan></text>
+          <rect x="38" y="135" width="46" height="1.4" fill="#f3ebd8" opacity="0.85" />
+          {/* aro con franja terracota */}
           <rect x="36" y="62" width="50" height="13" rx="4" fill="#262626" stroke="#4d5a52" stroke-width="1" />
+          <rect x="36" y="67.5" width="50" height="2.2" fill="#b5543a" />
           {/* tapa con estrías */}
           <rect x="41" y="47" width="40" height="16" rx="3" fill="#151515" stroke="#4d5a52" stroke-width="1" />
           <path d="M45 49.5v11 M49 49.5v11 M53 49.5v11 M57 49.5v11 M61 49.5v11 M65 49.5v11 M69 49.5v11 M73 49.5v11 M77 49.5v11" stroke="#3a3a3a" stroke-width="1.4" />
           {/* tapón y pico cebador */}
           <rect x="46" y="39" width="30" height="9" rx="3" fill="#1c1c1c" stroke="#4d5a52" stroke-width="1" />
-          <path d="M55 41 L64 41 L73 27 L66 23 Z" fill="#d7263d" />
-          <path d="M66 23 L73 27" stroke="#ff7a86" stroke-width="1.3" stroke-linecap="round" />
+          <path d="M55 41 L64 41 L73 27 L66 23 Z" fill="#c9573b" />
+          <path d="M66 23 L73 27" stroke="#ee9a80" stroke-width="1.3" stroke-linecap="round" />
         </g>
       </g>
 
