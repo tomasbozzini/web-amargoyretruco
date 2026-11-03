@@ -246,41 +246,47 @@ dialog.cart-panel[open] {
 
 .intro-termo {
   transform-box: view-box;
-  transform-origin: 45px 77px;
+  transform-origin: 73px 119px;
   animation: intro-tilt 2.2s ease-in-out both;
 }
+/* Arranca casi parado, se inclina para cebar y vuelve. */
 @keyframes intro-tilt {
   0%,
-  14% {
-    transform: rotate(-38deg);
+  12% {
+    transform: rotate(-60deg);
   }
   30%,
-  72% {
+  70% {
     transform: rotate(0deg);
   }
   90%,
   100% {
-    transform: rotate(-38deg);
+    transform: rotate(-60deg);
   }
 }
 
 .intro-stream {
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
+  /*
+   * El chorro mide ~27 unidades: un trazo de 40 seguido de un hueco de 400
+   * hace que se vea entero o nada, sin repetirse (no depende de pathLength,
+   * que algunos navegadores de celular interpretan distinto).
+   */
+  stroke-dasharray: 40 400;
+  stroke-dashoffset: 40;
   animation: intro-pour 2.2s linear both;
 }
 @keyframes intro-pour {
   0%,
-  31% {
-    stroke-dashoffset: 100;
+  32% {
+    stroke-dashoffset: 40;
   }
   42%,
-  68% {
+  66% {
     stroke-dashoffset: 0;
   }
-  80%,
+  78%,
   100% {
-    stroke-dashoffset: -100;
+    stroke-dashoffset: -40;
   }
 }
 
