@@ -1,8 +1,9 @@
 /**
  * Lógica pura del carrito (sin DOM), compartida entre el navegador y los tests.
- * Los precios SIEMPRE salen del catálogo actual, nunca de lo guardado en el
- * navegador. Igual, todo lo que se arma en el cliente puede ser manipulado: por
- * eso el pedido siempre lleva la leyenda de confirmación.
+ * El pedido vive solo en memoria: se reinicia al recargar la página.
+ * Los precios salen del catálogo de la página. Igual, todo lo que se arma en el
+ * cliente puede ser manipulado: por eso el pedido siempre lleva la leyenda de
+ * confirmación.
  */
 
 export type DeliveryMode = 'delivery' | 'pickup';
@@ -65,16 +66,6 @@ export function removeItem(state: CartState, productId: string): CartState {
   return { ...state, items };
 }
 
-/** Ajusta lo guardado al catálogo actual: quita lo que ya no existe o está agotado y limita al stock. */
-export function reconcile(state: CartState, products: Map<string, CartProduct>): CartState {
-  let next: CartState = { ...state, items: {} };
-  for (const [id, quantity] of Object.entries(state.items)) {
-    const product = products.get(id);
-    if (product) next = setQuantity(next, product, quantity);
-  }
-  return next;
-}
-
 export function computeTotals(state: CartState, products: Map<string, CartProduct>): CartTotals {
   const lines: CartLine[] = [];
   for (const [id, quantity] of Object.entries(state.items)) {
@@ -104,50 +95,20 @@ export function checkOrder(totals: CartTotals, delivery: DeliveryMode | null, mi
 }
 
 /* ------------------------------------------------------------------ */
-/* Persistencia (localStorage con try/catch)                           */
+/* Sin persistencia                                                    */
 /* ------------------------------------------------------------------ */
 
-export const STORAGE_KEY = 'ayr-carrito-v1';
-
 /**
- * Lee el carrito guardado. Solo se guardan ids, cantidades y el tipo de entrega:
- * nunca nombre ni zona del cliente, y nunca precios.
+ * El pedido vive solo en memoria: al recargar o volver a entrar a la web,
+ * arranca vacío. Las primeras versiones lo guardaban en localStorage con esta
+ * clave; se borra al cargar la página para no dejar pedidos viejos guardados.
  */
-export function parseStoredCart(raw: string | null): CartState {
-  if (!raw || raw.length > 20_000) return emptyCart();
-  try {
-    const data: unknown = JSON.parse(raw);
-    if (typeof data !== 'object' || data === null) return emptyCart();
-    const { items, delivery } = data as { items?: unknown; delivery?: unknown };
-    const safeItems: Record<string, number> = {};
-    if (typeof items === 'object' && items !== null) {
-      for (const [id, qty] of Object.entries(items).slice(0, 200)) {
-        if (/^[a-z0-9-]{1,200}$/.test(id) && typeof qty === 'number' && Number.isInteger(qty) && qty > 0) {
-          safeItems[id] = Math.min(qty, MAX_QUANTITY_PER_ITEM);
-        }
-      }
-    }
-    return {
-      items: safeItems,
-      delivery: delivery === 'delivery' || delivery === 'pickup' ? delivery : null,
-    };
-  } catch {
-    return emptyCart();
-  }
-}
+export const LEGACY_STORAGE_KEY = 'ayr-carrito-v1';
 
-export function loadCart(storage: Pick<Storage, 'getItem'> | null | undefined): CartState {
+export function clearLegacyCart(storage: Pick<Storage, 'removeItem'> | null | undefined): void {
   try {
-    return parseStoredCart(storage?.getItem(STORAGE_KEY) ?? null);
+    storage?.removeItem(LEGACY_STORAGE_KEY);
   } catch {
-    return emptyCart();
-  }
-}
-
-export function saveCart(storage: Pick<Storage, 'setItem'> | null | undefined, state: CartState): void {
-  try {
-    storage?.setItem(STORAGE_KEY, JSON.stringify({ items: state.items, delivery: state.delivery }));
-  } catch {
-    /* modo privado, almacenamiento lleno o bloqueado: el carrito sigue en memoria */
+    /* almacenamiento bloqueado o modo privado: no hay nada que borrar */
   }
 }

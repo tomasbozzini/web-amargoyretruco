@@ -2,15 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   addItem,
   checkOrder,
+  clearLegacyCart,
   computeTotals,
   emptyCart,
-  loadCart,
-  parseStoredCart,
-  reconcile,
+  LEGACY_STORAGE_KEY,
   removeItem,
-  saveCart,
   setQuantity,
-  STORAGE_KEY,
   type CartProduct,
 } from '../../src/lib/cart';
 
@@ -52,11 +49,6 @@ describe('carrito', () => {
     expect(totals.total).toBe(8600 * 2 + 9200);
     expect(totals.lines.map((l) => l.lineTotal)).toEqual([17200, 9200]);
   });
-
-  it('reconcile: quita lo que ya no existe o está agotado y ajusta al stock actual', () => {
-    const stored = { items: { 'baldo-500': 3, 'serena-500': 10, 'rei-500': 1, 'ya-no-existe': 2 }, delivery: 'delivery' as const };
-    expect(reconcile(stored, catalog)).toEqual({ items: { 'baldo-500': 3, 'serena-500': 2 }, delivery: 'delivery' });
-  });
 });
 
 describe('mínimo de delivery', () => {
@@ -89,35 +81,24 @@ describe('mínimo de delivery', () => {
   });
 });
 
-describe('persistencia', () => {
-  it('ignora datos corruptos o manipulados', () => {
-    expect(parseStoredCart(null)).toEqual(emptyCart());
-    expect(parseStoredCart('{no es json')).toEqual(emptyCart());
-    expect(parseStoredCart('"texto"')).toEqual(emptyCart());
-    expect(
-      parseStoredCart(JSON.stringify({ items: { 'baldo-500': 2, '<script>': 1, x: -1, y: 1.5, z: '3' }, delivery: 'helicoptero', price: 1 })),
-    ).toEqual({ items: { 'baldo-500': 2 }, delivery: null });
+describe('sin persistencia', () => {
+  it('borra el pedido que guardaban versiones anteriores', () => {
+    const store = new Map<string, string>([
+      [LEGACY_STORAGE_KEY, JSON.stringify({ items: { 'baldo-500': 2 }, delivery: 'pickup' })],
+      ['otra-clave', 'se queda'],
+    ]);
+    clearLegacyCart({ removeItem: (key: string) => void store.delete(key) });
+    expect(store.has(LEGACY_STORAGE_KEY)).toBe(false);
+    expect(store.get('otra-clave')).toBe('se queda');
   });
 
-  it('no guarda precios ni datos personales', () => {
-    const store = new Map<string, string>();
-    const storage = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) };
-    saveCart(storage, { items: { 'baldo-500': 2 }, delivery: 'pickup' });
-    expect(JSON.parse(store.get(STORAGE_KEY) ?? '')).toEqual({ items: { 'baldo-500': 2 }, delivery: 'pickup' });
-    expect(loadCart(storage)).toEqual({ items: { 'baldo-500': 2 }, delivery: 'pickup' });
-  });
-
-  it('si localStorage falla (modo privado, bloqueado), sigue funcionando en memoria', () => {
+  it('si localStorage está bloqueado (modo privado), no rompe', () => {
     const broken = {
-      getItem: () => {
+      removeItem: () => {
         throw new Error('SecurityError');
       },
-      setItem: () => {
-        throw new Error('QuotaExceededError');
-      },
     };
-    expect(loadCart(broken)).toEqual(emptyCart());
-    expect(() => saveCart(broken, emptyCart())).not.toThrow();
-    expect(loadCart(null)).toEqual(emptyCart());
+    expect(() => clearLegacyCart(broken)).not.toThrow();
+    expect(() => clearLegacyCart(null)).not.toThrow();
   });
 });

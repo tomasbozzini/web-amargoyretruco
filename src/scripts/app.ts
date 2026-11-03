@@ -8,14 +8,11 @@
 import {
   addItem,
   checkOrder,
+  clearLegacyCart,
   computeTotals,
   emptyCart,
-  loadCart,
-  reconcile,
   removeItem,
-  saveCart,
   setQuantity,
-  STORAGE_KEY,
   type CartProduct,
   type CartState,
   type DeliveryMode,
@@ -74,21 +71,15 @@ for (const card of cards) {
 /* Estado del carrito                                                  */
 /* ------------------------------------------------------------------ */
 
-const storage = safeStorage();
-let cart: CartState = reconcile(loadCart(storage), products);
+// El pedido vive solo en memoria: cada vez que se carga la página arranca vacío.
+// Se borra también cualquier pedido que hayan guardado versiones anteriores.
+clearLegacyCart(safeStorage());
+let cart: CartState = emptyCart();
 
 function commit(next: CartState): void {
   cart = next;
-  saveCart(storage, cart);
   render();
 }
-
-// Si el carrito cambia en otra pestaña, se sincroniza.
-window.addEventListener('storage', (event) => {
-  if (event.key !== STORAGE_KEY) return;
-  cart = reconcile(loadCart(storage), products);
-  render();
-});
 
 /* ------------------------------------------------------------------ */
 /* Avisos                                                              */
@@ -497,6 +488,5 @@ if (fab && heroWhatsApp && 'IntersectionObserver' in window) {
   }).observe(heroWhatsApp);
 }
 
-saveCart(storage, cart);
 render();
 applyFilters();

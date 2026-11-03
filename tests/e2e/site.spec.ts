@@ -219,38 +219,39 @@ test('stock: no deja pasar del stock y lo agotado no se agrega', async ({ page }
   await expect(card(page, ID.reiVerde).locator('[data-add]')).toBeDisabled();
 });
 
-test('el carrito se guarda al recargar, sin datos personales', async ({ page }) => {
+test('al recargar la página, el pedido se reinicia', async ({ page }) => {
   await page.goto('/');
   await card(page, ID.baldo1kg).locator('[data-add]').click();
+  await card(page, ID.baldo500).locator('[data-add]').click();
   await page.locator('[data-cart-open]').first().click();
   await page.getByLabel(/Tu nombre/).fill('Juana');
   await page.getByLabel(/Retiro en zona Campus universitario/).check();
   await page.keyboard.press('Escape');
+  await expect(page.locator('[data-cart-count]')).toHaveText('2');
 
   await page.reload();
-  await expect(page.locator('[data-cart-count]')).toHaveText('1');
-  const stored = await page.evaluate(() => localStorage.getItem('ayr-carrito-v1'));
-  expect(JSON.parse(stored ?? '{}')).toEqual({ items: { [ID.baldo1kg]: 1 }, delivery: 'pickup' });
-  expect(stored).not.toContain('Juana');
-
+  await expect(page.locator('[data-cart-count]')).toBeHidden();
+  await expect(page.locator('[data-mobile-cart-bar]')).toBeHidden();
+  await expect(card(page, ID.baldo1kg).locator('[data-in-cart]')).toHaveText('');
   await page.locator('[data-cart-open]').first().click();
+  await expect(page.getByText('Todavía no tenés cartas en la mano')).toBeVisible();
   await expect(page.getByLabel(/Tu nombre/)).toHaveValue('');
-  await expect(page.getByLabel(/Retiro en zona Campus universitario/)).toBeChecked();
+
+  // No queda nada guardado en el navegador.
+  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 });
 
-test('un carrito guardado se ajusta al stock actual y los precios salen del catálogo', async ({ page }) => {
-  await page.addInitScript((ids) => {
-    try {
-      localStorage.setItem('ayr-carrito-v1', JSON.stringify({ items: { [ids.especial]: 50, [ids.reiVerde]: 1, 'no-existe': 3 }, delivery: 'delivery', price: 1 }));
-    } catch {
-      /* noop */
+test('un pedido viejo guardado por una versión anterior no se carga y se borra', async ({ page }) => {
+  await page.addInitScript((id) => {
+    // Simula el pedido que dejaba guardado la versión anterior (solo antes de la primera carga).
+    if (!sessionStorage.getItem('sembrado')) {
+      sessionStorage.setItem('sembrado', '1');
+      localStorage.setItem('ayr-carrito-v1', JSON.stringify({ items: { [id]: 2 }, delivery: 'pickup' }));
     }
-  }, ID);
+  }, ID.baldo500);
   await page.goto('/');
-  await expect(page.locator('[data-cart-count]')).toHaveText('2'); // stock de Edición Especial
-  await page.locator('[data-cart-open]').first().click();
-  await expect(page.locator('[data-cart-lines] li')).toHaveCount(1);
-  expect(norm(await page.locator('[data-cart-total]').innerText())).toBe('$ 21.000');
+  await expect(page.locator('[data-cart-count]')).toBeHidden();
+  expect(await page.evaluate(() => localStorage.getItem('ayr-carrito-v1'))).toBeNull();
 });
 
 test('si localStorage está bloqueado, el carrito igual funciona', async ({ page }) => {

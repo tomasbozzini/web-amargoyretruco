@@ -145,7 +145,7 @@ Regenera `public/og-image.png` (la imagen que aparece al compartir el link en Wh
 3. Nombre y zona/barrio son opcionales y **no se guardan**: solo se agregan al mensaje.
 4. El botón **Pedir por WhatsApp** abre `wa.me/5491133907596` con el mensaje armado: saludo, productos (cantidad × producto, presentación, precio), total, entrega, nombre, zona y la leyenda **"Precios y stock sujetos a confirmación por WhatsApp"**.
 
-El carrito se guarda en el navegador (`localStorage`): solo productos, cantidades y tipo de entrega. Los precios siempre salen del catálogo actual. Como el mensaje se arma en el navegador, alguien podría modificarlo: por eso siempre lleva la leyenda de confirmación y los precios se confirman por WhatsApp.
+El pedido **no se guarda**: vive solo mientras la página está abierta. Si se recarga la página o se vuelve a entrar otro día, arranca vacío. Los precios salen del catálogo cargado en la página. Como el mensaje se arma en el navegador, alguien podría modificarlo: por eso siempre lleva la leyenda de confirmación y los precios se confirman por WhatsApp.
 
 ## 9. Tests
 
@@ -159,7 +159,7 @@ npm run test:e2e
 
 Los end-to-end hacen el build de producción y lo prueban en Chromium contra un **Sheets simulado** (`tests/e2e/mock-sheet-server.mjs`) que lee `tests/fixtures/catalogo-prueba.csv`. **Los precios de ese archivo son de prueba, no son reales.** La primera vez puede hacer falta instalar el navegador: `npx playwright install chromium`.
 
-Cubren: catálogo y estados de stock, texto del Sheets mostrado como texto plano, foto rota con ilustración de reemplazo, filtros, buscador y orden, carrito con mínimo de delivery y mensaje de WhatsApp, límite de stock, persistencia, `localStorage` bloqueado, headers de seguridad, SEO, y el Sheets caído (con y sin copia en memoria).
+Cubren: catálogo y estados de stock, texto del Sheets mostrado como texto plano, foto rota con ilustración de reemplazo, filtros, buscador y orden, carrito con mínimo de delivery y mensaje de WhatsApp, límite de stock, pedido que se reinicia al recargar, `localStorage` bloqueado, headers de seguridad, SEO, y el Sheets caído (con y sin copia en memoria).
 
 ## 10. Seguridad
 
