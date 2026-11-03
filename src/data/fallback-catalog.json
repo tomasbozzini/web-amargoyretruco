@@ -1,16 +1,17 @@
 {
   "_info": "Respaldo del catálogo si el Google Sheets no responde. Mismas columnas que la pestaña Catalogo. Se regenera con `npm run fallback:update` (lee CATALOG_CSV_URL).",
-  "updatedAt": "2026-11-01",
+  "updatedAt": "2026-11-03",
   "rows": [
-    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "500 g", "Precio": "$7.500", "Stock": "6", "Foto": "", "Visible": "SI" },
-    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "1 kg", "Precio": "$13.700", "Stock": "4", "Foto": "", "Visible": "SI" },
-    { "Marca": "Canarias", "Producto": "Canarias Tradicional", "Presentación": "500 g", "Precio": "$7.500", "Stock": "5", "Foto": "", "Visible": "SI" },
-    { "Marca": "Canarias", "Producto": "Canarias Serena", "Presentación": "500 g", "Precio": "$8.200", "Stock": "3", "Foto": "", "Visible": "SI" },
-    { "Marca": "Canarias", "Producto": "Canarias Edición Especial", "Presentación": "500 g", "Precio": "$8.300", "Stock": "2", "Foto": "", "Visible": "SI" },
-    { "Marca": "Canarias", "Producto": "Canarias Té verde y jengibre", "Presentación": "500 g", "Precio": "$7.900", "Stock": "2", "Foto": "", "Visible": "SI" },
-    { "Marca": "Rei Verde", "Producto": "Rei Verde Tradicional", "Presentación": "500 g", "Precio": "$6.900", "Stock": "5", "Foto": "", "Visible": "SI" },
-    { "Marca": "Sara", "Producto": "Sara Coco", "Presentación": "500 g", "Precio": "$10.150", "Stock": "2", "Foto": "", "Visible": "SI" },
-    { "Marca": "Verdecita", "Producto": "Verdecita", "Presentación": "500 g", "Precio": "$5.850", "Stock": "6", "Foto": "", "Visible": "SI" },
-    { "Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "500 g", "Precio": "$5.950", "Stock": "3", "Foto": "", "Visible": "SI" }
+    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "500 g", "Precio": "$6.850", "Stock": "8", "Foto": "", "Visible": "SI" },
+    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "1 kg", "Precio": "$11.700", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Tradicional", "Presentación": "500 g", "Precio": "$6.450", "Stock": "7", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Serena", "Presentación": "500 g", "Precio": "$7.000", "Stock": "3", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Edición Especial", "Presentación": "500 g", "Precio": "$7.150", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Té verde y jengibre", "Presentación": "500 g", "Precio": "$7.150", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Rei Verde", "Producto": "Rei Verde Clásica", "Presentación": "500 g", "Precio": "$5.350", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Sara", "Producto": "Sara Coco", "Presentación": "500 g", "Precio": "$9.600", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Verdecita", "Producto": "Verdecita", "Presentación": "500 g", "Precio": "$4.950", "Stock": "4", "Foto": "", "Visible": "SI" },
+    { "Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "500 g", "Precio": "$5.200", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Canarias", "Producto": "Canarias Suave", "Presentación": "500 g", "Precio": "$6.550", "Stock": "2", "Foto": "", "Visible": "SI" }
   ]
 }
