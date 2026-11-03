@@ -21,6 +21,13 @@ const site =
 const hasLogo = existsSync(new URL('./public/logo.svg', import.meta.url));
 
 /**
+ * Vercel Web Analytics (visitas a la página): el script solo se incluye cuando el
+ * build corre en Vercel (ahí existe /_vercel/insights/script.js). Se carga como
+ * archivo propio, no inline, para respetar la CSP.
+ */
+const vercelAnalytics = process.env.VERCEL === '1';
+
+/**
  * En Vercel se usa su adaptador. Para probar el build de producción en local
  * (tests end-to-end con los headers de seguridad reales) se puede usar el de Node:
  *   ASTRO_ADAPTER=node npm run build && node dist/server/entry.mjs
@@ -54,6 +61,7 @@ export default defineConfig({
     },
     define: {
       __HAS_LOGO__: JSON.stringify(hasLogo),
+      __VERCEL_ANALYTICS__: JSON.stringify(vercelAnalytics),
     },
   },
 });

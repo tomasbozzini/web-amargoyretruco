@@ -94,6 +94,8 @@ const jsonLd = structuredData
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
     {/* Bloqueante a propósito (es mínimo): decide antes de pintar si se muestra la intro. */}
     {intro && <script is:inline src="/intro-gate.js"></script>}
+    {/* Vercel Web Analytics: cuenta visitas sin cookies ni datos personales. */}
+    {__VERCEL_ANALYTICS__ && <script is:inline defer src="/_vercel/insights/script.js"></script>}
   </head>
   <body>
     <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-verde-oscuro focus:px-4 focus:py-3 focus:text-crema">

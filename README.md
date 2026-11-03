@@ -70,6 +70,16 @@ La variable se lee **solo en el servidor**; nunca llega al navegador.
 
 No hace falta un dominio propio: la web queda en `https://<proyecto>.vercel.app`. La URL de producción se usa sola para Open Graph, sitemap y robots. Si algún día usás un dominio propio, definí `SITE_URL` en Vercel.
 
+### Ver cuántas visitas tiene la página (Vercel Web Analytics)
+
+La web ya trae el script de Vercel Web Analytics (se incluye solo en los deploys de Vercel). Para empezar a ver datos:
+
+1. En Vercel: tu proyecto → pestaña **Analytics** → **Enable** (habilitar Web Analytics).
+2. Hacé un **Redeploy** (o cualquier push) para que el deploy quede con Analytics activo.
+3. Desde ahí, en la pestaña **Analytics** ves **Page views** (cantidad de veces que entraron), **Visitors** (personas distintas, aproximado), de dónde vienen (por ejemplo Instagram), países y dispositivos. Los datos aparecen a los pocos minutos de las primeras visitas.
+
+Web Analytics no usa cookies ni guarda datos personales de los visitantes. El plan gratis (Hobby) tiene un límite mensual de eventos: lo ves en la misma pestaña.
+
 ---
 
 ## 4. Cambiar precios, stock y fotos (desde el Sheets)
@@ -179,6 +189,7 @@ Cubren: catálogo y estados de stock, texto del Sheets mostrado como texto plano
 
 - Todo el texto del Sheets se muestra como **texto plano**, con largo limitado y sin caracteres de control. En el cliente se usa `textContent`, nunca `innerHTML`. Un test lo verifica.
 - Sin claves en el cliente. La URL del CSV solo la conoce el servidor.
+- Las visitas se cuentan con Vercel Web Analytics (sin cookies ni datos personales); el script se carga desde el propio dominio (`/_vercel/insights/script.js`), compatible con la CSP.
 - Headers en `vercel.json` y `src/middleware.ts` (deben coincidir; un test lo verifica): CSP estricta (`script-src 'self'`, sin `unsafe-inline`; imágenes `https:`; Google Fonts), `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` y `frame-ancestors`, `Permissions-Policy`.
 - Todos los links externos llevan `rel="noopener noreferrer"`.
 - Para verificar los headers después del deploy: `curl -I https://<proyecto>.vercel.app`.
