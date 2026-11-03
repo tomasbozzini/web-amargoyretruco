@@ -332,28 +332,3 @@ dialog.cart-panel[open] {
   }
 }
 
-/* "Cebando el primero…" -> "¡Servido!" en el mismo lugar. */
-.intro-caption {
-  display: grid;
-}
-.intro-caption > span {
-  grid-area: 1 / 1;
-}
-.intro-caption-1 {
-  animation: intro-fade-out 0.25s ease 1.7s forwards;
-}
-.intro-caption-2 {
-  opacity: 0;
-  animation: intro-fade-in 0.3s ease 1.8s forwards;
-}
-@keyframes intro-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-@keyframes intro-fade-in {
-  to {
-    opacity: 1;
-  }
-}
-

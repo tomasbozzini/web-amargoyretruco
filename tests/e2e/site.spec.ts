@@ -459,7 +459,7 @@ test.describe('intro del mate', () => {
     await page.goto('/');
     const intro = page.locator('[data-intro]');
     await expect(intro).toBeVisible();
-    await expect(intro).toContainText('Cebando el primero');
+    await expect(intro).toContainText('Amargo y Retruco');
     // Termina sola (~2,6 s) y se saca de la página.
     await expect(intro).toHaveCount(0, { timeout: 6000 });
     await expect(page.getByRole('heading', { name: /Mate y truco/ })).toBeVisible();
