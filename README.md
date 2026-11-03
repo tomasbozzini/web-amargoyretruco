@@ -121,6 +121,10 @@ Lo pendiente está marcado con `// TODO`.
 
 > No pongas alias, CBU ni claves en `config.ts`: todo lo que está ahí puede llegar al navegador.
 
+### Intro al entrar
+
+Al entrar a la web aparece una intro corta (un termo ceba un mate, unos 2,5 segundos). Se saltea tocando la pantalla, no se repite si recargás en la misma pestaña y no se muestra si el celular tiene activado "reducir movimiento". Para sacarla: `SHOW_INTRO = false` en `src/config.ts`.
+
 ### Pausar las ventas (por ejemplo, mientras llega la yerba)
 
 En `src/config.ts`:

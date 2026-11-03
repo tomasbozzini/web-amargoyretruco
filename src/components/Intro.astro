@@ -1,0 +1,59 @@
+---
+/**
+ * Intro al entrar: un termo ceba un mate y después se desvanece (~2,5 s).
+ * - Animación 100% CSS + SVG (sin scripts inline: respeta la CSP).
+ * - Se saltea tocando la pantalla o con Esc (lo maneja src/scripts/app.ts).
+ * - No se repite al recargar en la misma pestaña (public/intro-gate.js) y no se
+ *   muestra si el dispositivo pide "reducir movimiento".
+ * - Es decorativa: aria-hidden y sin elementos que reciban foco.
+ * Se apaga desde src/config.ts (SHOW_INTRO).
+ */
+---
+
+<div class="intro on-dark yerba-texture" aria-hidden="true" data-intro>
+  <div class="intro-scene flex flex-col items-center px-6 text-center">
+    <svg viewBox="0 0 180 185" class="w-[min(62vw,250px)]" xmlns="http://www.w3.org/2000/svg">
+      {/* Termo (se inclina, ceba y vuelve) */}
+      <g class="intro-termo">
+        <g transform="translate(-6 -20) rotate(52 51 97)">
+          <rect x="36" y="60" width="30" height="74" rx="8" fill="#b5543a" />
+          <rect x="36" y="92" width="30" height="10" fill="#f3ebd8" opacity="0.9" />
+          <rect x="40" y="60" width="4" height="70" rx="2" fill="#ffffff" opacity="0.18" />
+          <rect x="41" y="50" width="20" height="12" rx="3" fill="#e8dcc0" />
+          <rect x="46" y="42" width="10" height="10" rx="2" fill="#d9cbad" />
+        </g>
+      </g>
+
+      {/* Chorro de agua */}
+      <path class="intro-stream" d="M89 43 C101 45 110 60 114 79" pathLength="100" fill="none" stroke="#e3f4f7" stroke-width="3.8" stroke-linecap="round" />
+
+      {/* Vapor */}
+      <g class="intro-steam" fill="none" stroke="#f3ebd8" stroke-width="2" stroke-linecap="round">
+        <path d="M112 70 c-4 -6 4 -10 0 -16 c-3 -4 2 -8 0 -12" />
+        <path d="M124 68 c-4 -6 4 -10 0 -16 c-3 -4 2 -8 0 -12" />
+        <path d="M136 70 c-4 -6 4 -10 0 -16" />
+      </g>
+
+      {/* Mate */}
+      <ellipse cx="122" cy="176" rx="34" ry="4" fill="#000000" opacity="0.25" />
+      <path d="M84 116 C84 100 92 92 100 88 L144 88 C152 92 160 100 160 116 C160 150 144 172 122 172 C100 172 84 150 84 116 Z" fill="#a0693f" />
+      <path d="M140 92 C152 98 156 108 156 118 C156 146 144 166 126 170 C142 160 148 140 146 118 C145 106 142 98 136 92 Z" fill="#7d4f2d" opacity="0.6" />
+      <ellipse cx="98" cy="120" rx="4" ry="13" fill="#ffffff" opacity="0.15" />
+      <rect x="94" y="78" width="56" height="12" rx="5" fill="#e8dcc0" stroke="#bfae86" stroke-width="1" />
+      <ellipse cx="122" cy="80" rx="25" ry="4.5" fill="#5e8f4f" />
+      <ellipse class="intro-foam" cx="118" cy="80" rx="12" ry="2.8" fill="#c4dba6" />
+      {/* Bombilla */}
+      <line x1="132" y1="82" x2="162" y2="26" stroke="#d9cbad" stroke-width="4.5" stroke-linecap="round" />
+      <line x1="159" y1="31" x2="164" y2="22" stroke="#bfae86" stroke-width="6" stroke-linecap="round" />
+    </svg>
+
+    <p class="mt-6 font-display text-4xl leading-none sm:text-5xl">
+      Amargo <span class="italic text-[#e9a58f]">y</span> Retruco
+    </p>
+    <p class="intro-caption label mt-3 text-xl text-[#e9a58f]">
+      <span class="intro-caption-1">Cebando el primero…</span>
+      <span class="intro-caption-2">¡Servido!</span>
+    </p>
+  </div>
+  <p class="label absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] text-base text-crema/60">Tocá para saltar</p>
+</div>

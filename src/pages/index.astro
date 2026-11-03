@@ -14,7 +14,8 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import HowToBuy from '../components/HowToBuy.astro';
-import { BUSINESS, CATALOG_CACHE_CONTROL, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, SALES_PAUSED, WHATSAPP_NUMBER } from '../config';
+import Intro from '../components/Intro.astro';
+import { BUSINESS, CATALOG_CACHE_CONTROL, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, SALES_PAUSED, SHOW_INTRO, WHATSAPP_NUMBER } from '../config';
 import Base from '../layouts/Base.astro';
 import { loadCatalog } from '../lib/catalog';
 
@@ -26,7 +27,8 @@ const salesPaused = SALES_PAUSED_ENV ?? SALES_PAUSED;
 Astro.response.headers.set('Cache-Control', CATALOG_CACHE_CONTROL);
 ---
 
-<Base structuredData>
+<Base structuredData intro={SHOW_INTRO}>
+  {SHOW_INTRO && <Intro />}
   <Header salesPaused={salesPaused} />
   <main id="contenido">
     <Hero />

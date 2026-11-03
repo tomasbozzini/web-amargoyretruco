@@ -17,6 +17,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4321',
     trace: 'retain-on-failure',
+    // Sin intro animada en los tests generales (la intro tiene sus propios tests).
+    reducedMotion: 'reduce',
   },
   projects: [
     { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /desktop\.spec\.ts/ },

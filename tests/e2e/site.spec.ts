@@ -59,6 +59,8 @@ test('muestra el catálogo del Sheets con precios y estados de stock', async ({ 
 
   await expect(page.locator('[data-product]')).toHaveCount(6);
   await expect(page.locator('[data-sales-paused-banner]')).toHaveCount(0);
+  // Con "reducir movimiento" no hay intro.
+  await expect(page.locator('[data-intro]')).toHaveCount(0);
   await expect(page.locator('[data-brand-chip]')).toHaveText(['Todas', 'Baldo', 'Canarias', 'Rei Verde', 'Sara']);
 
   expect(norm(await card(page, ID.baldo500).locator('[data-price-value]').innerText())).toBe('$ 8.600');
@@ -449,3 +451,31 @@ test('ventas en pausa: cartel "Muy pronto renovamos stock" y no se puede agregar
   await expect(page.locator('[data-mobile-cart-bar]')).toBeHidden();
   await expect(page.locator('[data-toast]')).toBeHidden();
 });
+
+test.describe('intro del mate', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('se muestra al entrar, se va sola y no se repite al recargar', async ({ page }) => {
+    await page.goto('/');
+    const intro = page.locator('[data-intro]');
+    await expect(intro).toBeVisible();
+    await expect(intro).toContainText('Cebando el primero');
+    // Termina sola (~2,6 s) y se saca de la página.
+    await expect(intro).toHaveCount(0, { timeout: 6000 });
+    await expect(page.getByRole('heading', { name: /Mate y truco/ })).toBeVisible();
+
+    await page.reload();
+    await expect(page.locator('[data-intro]')).toHaveCount(0);
+  });
+
+  test('se saltea tocando la pantalla y la página queda usable', async ({ page }) => {
+    await page.goto('/');
+    const intro = page.locator('[data-intro]');
+    await expect(intro).toBeVisible();
+    await intro.click();
+    await expect(intro).toHaveCount(0, { timeout: 1500 });
+    await card(page, ID.baldo500).locator('[data-add]').click();
+    await expect(page.locator('[data-cart-count]')).toHaveText('1');
+  });
+});
+

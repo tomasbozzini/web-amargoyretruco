@@ -8,6 +8,8 @@ interface Props {
   /** Datos estructurados solo en la portada. */
   structuredData?: boolean;
   noindex?: boolean;
+  /** Carga public/intro-gate.js (solo en la portada, si hay intro). */
+  intro?: boolean;
 }
 
 const {
@@ -15,6 +17,7 @@ const {
   description = BUSINESS.description,
   structuredData = false,
   noindex = false,
+  intro = false,
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
@@ -89,6 +92,8 @@ const jsonLd = structuredData
     />
 
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+    {/* Bloqueante a propósito (es mínimo): decide antes de pintar si se muestra la intro. */}
+    {intro && <script is:inline src="/intro-gate.js"></script>}
   </head>
   <body>
     <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-verde-oscuro focus:px-4 focus:py-3 focus:text-crema">

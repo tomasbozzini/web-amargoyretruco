@@ -45,6 +45,26 @@ function safeStorage(): Storage | null {
 }
 
 /* ------------------------------------------------------------------ */
+/* Intro del mate                                                      */
+/* ------------------------------------------------------------------ */
+
+const intro = $('[data-intro]');
+if (intro) {
+  if (getComputedStyle(intro).display === 'none') {
+    intro.remove(); // ya vista en esta pestaña o "reducir movimiento"
+  } else {
+    const skip = () => intro.classList.add('intro-done');
+    intro.addEventListener('click', skip, { once: true });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') skip();
+    });
+    intro.addEventListener('animationend', (event) => {
+      if (event.animationName === 'intro-out') intro.remove();
+    });
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Configuración y productos                                           */
 /* ------------------------------------------------------------------ */
 

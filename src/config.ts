@@ -63,6 +63,17 @@ export const DELIVERY_FEE_INFO: string | null = 'El delivery es sin cargo.';
 export const PAYMENT_METHODS = ['Efectivo', 'Transferencia'] as const;
 
 /* ------------------------------------------------------------------ */
+/* Intro                                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Intro al entrar (un termo ceba un mate, ~2,5 s; se saltea tocando la pantalla).
+ * Se muestra una vez por pestaña y no aparece si el dispositivo pide "reducir movimiento".
+ * false = sin intro.
+ */
+export const SHOW_INTRO = true;
+
+/* ------------------------------------------------------------------ */
 /* Pausa de ventas                                                     */
 /* ------------------------------------------------------------------ */
 
