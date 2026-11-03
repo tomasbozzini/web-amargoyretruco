@@ -78,6 +78,27 @@ describe('buildOrderMessage', () => {
   });
 });
 
+describe('mensaje de encargo', () => {
+  it('se marca como ENCARGO y mantiene la leyenda', () => {
+    const message = buildOrderMessage({
+      ...base,
+      totals: totalsFor([[baldo, 2]]),
+      delivery: 'pickup',
+      customerName: 'Juana',
+      preorder: true,
+    });
+    expect(message.split('\n')[0]).toBe('¡Hola Amargo y Retruco! 🧉 Quiero dejar este *ENCARGO* para cuando llegue la yerba:');
+    expect(message).toContain('• 2 x Baldo Tradicional (500 g)');
+    expect(message).toContain(DISCLAIMER);
+  });
+
+  it('sin preorder, saludo de pedido normal', () => {
+    const message = buildOrderMessage({ ...base, totals: totalsFor([[baldo, 1]]), delivery: 'pickup', customerName: 'Juana' });
+    expect(message).toContain('Quiero hacer este pedido:');
+    expect(message).not.toContain('ENCARGO');
+  });
+});
+
 describe('buildWhatsAppUrl', () => {
   it('codifica el mensaje con encodeURIComponent', () => {
     const url = buildWhatsAppUrl('5491133907596', 'Hola & chau\n¿Total? $ 8.600 #1');

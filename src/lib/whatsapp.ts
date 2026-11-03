@@ -15,6 +15,8 @@ export interface OrderMessageInput {
   /** Solo se incluye si la entrega es delivery. */
   customerAddress?: string;
   disclaimer: string;
+  /** Encargo: la yerba todavía no llegó (modo 'encargo'). */
+  preorder?: boolean;
 }
 
 export function buildOrderMessage(input: OrderMessageInput): string {
@@ -33,7 +35,9 @@ export function buildOrderMessage(input: OrderMessageInput): string {
     input.delivery === 'delivery' ? `Delivery en ${input.city}` : `Retiro en ${input.pickupArea}`;
 
   const lines = [
-    `¡Hola ${input.businessName}! 🧉 Quiero hacer este pedido:`,
+    input.preorder
+      ? `¡Hola ${input.businessName}! 🧉 Quiero dejar este *ENCARGO* para cuando llegue la yerba:`
+      : `¡Hola ${input.businessName}! 🧉 Quiero hacer este pedido:`,
     '',
     ...items,
     '',

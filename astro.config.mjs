@@ -49,8 +49,8 @@ export default defineConfig({
   env: {
     schema: {
       CATALOG_CSV_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
-      // Opcional: pisa SALES_PAUSED de src/config.ts (true/false). Útil para pruebas.
-      SALES_PAUSED: envField.boolean({ context: 'server', access: 'secret', optional: true }),
+      // Opcional: pisa SALES_MODE de src/config.ts ('normal' | 'encargo' | 'pausa'). Útil para pruebas.
+      SALES_MODE: envField.enum({ context: 'server', access: 'secret', values: ['normal', 'encargo', 'pausa'], optional: true }),
     },
   },
   vite: {

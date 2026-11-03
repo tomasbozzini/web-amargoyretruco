@@ -76,17 +76,26 @@ const config = {
   phone: configNode?.dataset.phone ?? '',
   minDelivery: Number(configNode?.dataset.minDelivery ?? 0) || 0,
   disclaimer: configNode?.dataset.disclaimer ?? '',
-  salesPaused: configNode?.dataset.salesPaused === 'true',
+  /** 'normal' | 'encargo' | 'pausa' (ver SALES_MODE en src/config.ts). */
+  salesMode: configNode?.dataset.salesMode ?? 'normal',
+  preorderMax: Number(configNode?.dataset.preorderMax ?? 0) || 10,
 };
+const preorder = config.salesMode === 'encargo';
+/** Palabra para los mensajes: "pedido" o "encargo". */
+const orderWord = preorder ? 'encargo' : 'pedido';
+/** Aviso cuando se llega al tope de un producto. */
+const maxText = (max: number) => (preorder ? `Máximo por encargo: ${max}` : `Máximo disponible: ${max}`);
 
 const cards = $$<HTMLElement>('[data-product]');
 const products = new Map<string, CartProduct>();
-// Con las ventas en pausa no se carga ningún producto en el carrito: no se puede agregar nada.
-for (const card of config.salesPaused ? [] : cards) {
+// En pausa no se carga ningún producto: no se puede agregar nada.
+for (const card of config.salesMode === 'pausa' ? [] : cards) {
   const { id = '', brand = '', name = '', presentation = '' } = card.dataset;
   const price = Number(card.dataset.price);
-  const stock = Number(card.dataset.stock);
-  if (!id || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) continue;
+  const realStock = Number(card.dataset.stock);
+  if (!id || !Number.isFinite(price) || price <= 0 || !Number.isInteger(realStock) || realStock < 0) continue;
+  // En encargo no hay stock real todavía: el tope es PREORDER_MAX_PER_ITEM por producto.
+  const stock = preorder ? config.preorderMax : realStock;
   products.set(id, { id, brand, name, presentation, price, stock });
 }
 
@@ -240,7 +249,7 @@ for (const card of cards) {
       return;
     }
     commit(next);
-    showToast(`¡Quiero! Sumaste ${fullProductName(product.brand, product.name)} al pedido.`);
+    showToast(`¡Quiero! Sumaste ${fullProductName(product.brand, product.name)} al ${orderWord}.`);
     // El botón quedó oculto: el foco pasa al "+" (o al "−" si ya no hay más stock).
     (increase && !increase.disabled ? increase : decrease)?.focus();
   });
@@ -251,7 +260,7 @@ for (const card of cards) {
     const quantity = next.items[product.id] ?? 0;
     if (quantity === current) return;
     commit(next);
-    announce(quantity >= product.stock ? `${label}: ${quantity}. Es el máximo disponible.` : `${label}: ${quantity} en tu pedido.`);
+    announce(quantity >= product.stock ? `${label}: ${quantity}. ${maxText(product.stock)}.` : `${label}: ${quantity} en tu ${orderWord}.`);
     if (increase.disabled) decrease?.focus();
   });
 
@@ -263,7 +272,7 @@ for (const card of cards) {
       announce(`Quitaste ${label} del pedido.`);
       addButton.focus();
     } else {
-      announce(`${label}: ${quantity} en tu pedido.`);
+      announce(`${label}: ${quantity} en tu ${orderWord}.`);
     }
   });
 }
@@ -286,6 +295,7 @@ const linesList = $('[data-cart-lines]');
 const emptyState = $('[data-cart-empty]');
 const formSection = $('[data-cart-form]');
 const footer = $('[data-cart-footer]');
+const preorderNote = $('[data-preorder-note]');
 const subtotalNode = $('[data-cart-subtotal]');
 const totalNode = $('[data-cart-total]');
 const minWarning = $('[data-min-warning]');
@@ -346,9 +356,9 @@ for (const input of [nameInput, addressInput]) {
 }
 
 $('[data-cart-clear]')?.addEventListener('click', () => {
-  if (!window.confirm('¿Vaciar el pedido?')) return;
+  if (!window.confirm(`¿Vaciar el ${orderWord}?`)) return;
   commit({ ...emptyCart(), delivery: cart.delivery });
-  announceInCart('Vaciaste el pedido.');
+  announceInCart(`Vaciaste el ${orderWord}.`);
 });
 
 orderLink?.addEventListener('click', (event) => {
@@ -403,7 +413,7 @@ function lineControls(product: CartProduct, quantity: number): HTMLLIElement {
   controls.append(stepper, remove);
   info.append(controls);
   if (quantity >= product.stock) {
-    info.append(el('p', 'mt-1 text-xs font-semibold text-mate', `Máximo disponible: ${product.stock}`));
+    info.append(el('p', 'mt-1 text-xs font-semibold text-mate', maxText(product.stock)));
   }
 
   li.append(info, el('p', 'shrink-0 font-bold whitespace-nowrap', formatPrice(product.price * quantity)));
@@ -465,6 +475,7 @@ function updateOrderLink(): void {
       customerName: nameInput?.value,
       customerAddress: addressInput?.value,
       disclaimer: config.disclaimer,
+      preorder,
     });
     orderLink.href = buildWhatsAppUrl(config.phone, message);
     orderLink.removeAttribute('aria-disabled');
@@ -487,7 +498,7 @@ function updateOrderLink(): void {
             ? 'Escribí tu nombre para mandar el pedido.'
             : check.reason === 'missing-address'
               ? 'Escribí la dirección de entrega para el delivery.'
-              : 'Se abre WhatsApp con tu pedido listo para enviar.';
+              : `Se abre WhatsApp con tu ${orderWord} listo para enviar.`;
   }
 }
 
@@ -497,6 +508,7 @@ function renderCart(): void {
   const check = checkOrder(totals, cart.delivery, config.minDelivery, customer());
 
   if (emptyState) emptyState.hidden = !isEmpty;
+  if (preorderNote) preorderNote.hidden = isEmpty;
   if (formSection) formSection.hidden = isEmpty;
   if (footer) footer.hidden = isEmpty;
 
@@ -544,7 +556,7 @@ function renderIndicators(): void {
     const quantity = cart.items[product.id] ?? 0;
     const atMax = quantity > 0 && quantity >= product.stock;
     const inCart = $('[data-in-cart]', card);
-    if (inCart) inCart.textContent = atMax ? `Máximo disponible: ${product.stock}` : '';
+    if (inCart) inCart.textContent = atMax ? maxText(product.stock) : '';
 
     const addButton = $<HTMLButtonElement>('[data-add]', card);
     const stepper = $('[data-card-stepper]', card);

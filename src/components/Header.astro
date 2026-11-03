@@ -1,13 +1,15 @@
 ---
+import type { SalesMode } from '../config';
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 
 interface Props {
   /** Con las ventas en pausa no se muestra el botón del pedido. */
-  salesPaused?: boolean;
+  salesMode?: SalesMode;
 }
 
-const { salesPaused = false } = Astro.props;
+const { salesMode = 'normal' } = Astro.props;
+const salesPaused = salesMode === 'pausa';
 
 const links = [
   { href: '#catalogo', label: 'Yerbas' },

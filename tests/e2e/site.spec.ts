@@ -7,6 +7,7 @@ import { expect, test, type Page } from '@playwright/test';
 const MOCK = 'http://127.0.0.1:4400';
 const FALLBACK_SITE = 'http://127.0.0.1:4322';
 const PAUSED_SITE = 'http://127.0.0.1:4323';
+const PREORDER_SITE = 'http://127.0.0.1:4324';
 const PHONE = '5491133907596';
 const DISCLAIMER = 'Precios y stock sujetos a confirmación por WhatsApp';
 
@@ -58,7 +59,7 @@ test('muestra el catálogo del Sheets con precios y estados de stock', async ({ 
   expect(response?.status()).toBe(200);
 
   await expect(page.locator('[data-product]')).toHaveCount(6);
-  await expect(page.locator('[data-sales-paused-banner]')).toHaveCount(0);
+  await expect(page.locator('[data-sales-banner]')).toHaveCount(0);
   // Con "reducir movimiento" no hay intro.
   await expect(page.locator('[data-intro]')).toHaveCount(0);
   await expect(page.locator('[data-brand-chip]')).toHaveText(['Todas', 'Baldo', 'Canarias', 'Rei Verde', 'Sara']);
@@ -427,7 +428,7 @@ test('Sheets sin productos para mostrar: mensaje amable con link a WhatsApp', as
 test('ventas en pausa: cartel "Muy pronto renovamos stock" y no se puede agregar', async ({ page }) => {
   const res = await page.goto(PAUSED_SITE);
   expect(res?.status()).toBe(200);
-  const banner = page.locator('[data-sales-paused-banner]');
+  const banner = page.locator('[data-sales-banner="pausa"]');
   await expect(banner).toBeVisible();
   await expect(banner.getByRole('heading', { name: 'Muy pronto renovamos stock' })).toBeVisible();
   await expect(banner.getByRole('link', { name: 'Escribinos' })).toHaveAttribute('href', new RegExp(`^https://wa\\.me/${PHONE}`));
@@ -450,6 +451,46 @@ test('ventas en pausa: cartel "Muy pronto renovamos stock" y no se puede agregar
   });
   await expect(page.locator('[data-mobile-cart-bar]')).toBeHidden();
   await expect(page.locator('[data-toast]')).toBeHidden();
+});
+
+test('modo encargo: se puede encargar aunque no haya stock y el mensaje llega como encargo', async ({ page }) => {
+  const res = await page.goto(PREORDER_SITE);
+  expect(res?.status()).toBe(200);
+  const banner = page.locator('[data-sales-banner="encargo"]');
+  await expect(banner.getByRole('heading', { name: 'Muy pronto renovamos stock' })).toBeVisible();
+  await expect(banner).toContainText('Ya podés dejar tu encargo');
+
+  // Sin etiquetas de stock; todos los productos se pueden encargar, incluso el agotado.
+  await expect(page.getByText('Últimas unidades')).toHaveCount(0);
+  await expect(page.getByText('Agotado', { exact: true })).toHaveCount(0);
+  const rei = card(page, ID.reiVerde); // stock 0 en el Sheets
+  await expect(rei.locator('[data-add]')).toBeEnabled();
+  await expect(rei.locator('[data-add]')).toContainText('Encargar');
+  await rei.locator('[data-add]').click();
+  await expect(page.locator('[data-toast]')).toContainText('al encargo');
+  await expect(rei.locator('[data-card-qty]')).toHaveText('1');
+
+  // Tope por producto en encargo: 10 (PREORDER_MAX_PER_ITEM).
+  const plus = rei.locator('[data-card-increase]');
+  for (let i = 0; i < 9; i += 1) await plus.click();
+  await expect(rei.locator('[data-card-qty]')).toHaveText('10');
+  await expect(plus).toBeDisabled();
+  await expect(rei.locator('[data-in-cart]')).toHaveText('Máximo por encargo: 10');
+
+  // Carrito como encargo.
+  await page.locator('header [data-cart-open]').click();
+  const cart = page.locator('[data-cart-dialog]');
+  await expect(cart.getByRole('heading', { name: 'Tu encargo' })).toBeVisible();
+  await expect(cart.locator('[data-preorder-note]')).toBeVisible();
+  await expect(orderLink(page)).toContainText('Encargar por WhatsApp');
+  await cart.getByLabel(/Retiro en zona Campus universitario/).check();
+  await cart.getByLabel('Tu nombre', { exact: true }).fill('Juana');
+  await expect(page.locator('[data-cart-help]')).toHaveText('Se abre WhatsApp con tu encargo listo para enviar.');
+  const message = await orderMessage(page);
+  expect(message.split('\n')[0]).toBe('¡Hola Amargo y Retruco! 🧉 Quiero dejar este *ENCARGO* para cuando llegue la yerba:');
+  expect(message).toContain('• 10 x Rei Verde Tradicional (500 g) - $ 7.400 c/u = $ 74.000');
+  expect(message).toContain('Nombre: Juana');
+  expect(message).toContain(DISCLAIMER);
 });
 
 test.describe('intro del mate', () => {

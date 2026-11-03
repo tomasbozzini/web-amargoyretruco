@@ -135,15 +135,16 @@ Lo pendiente está marcado con `// TODO`.
 
 Al entrar a la web aparece una intro corta (un termo ceba un mate, unos 2,5 segundos). Se saltea tocando la pantalla, no se repite si recargás en la misma pestaña y no se muestra si el celular tiene activado "reducir movimiento". Para sacarla: `SHOW_INTRO = false` en `src/config.ts`.
 
-### Pausar las ventas (por ejemplo, mientras llega la yerba)
+### Modo de venta: normal, encargo o pausa
 
-En `src/config.ts`:
+En `src/config.ts`, `SALES_MODE`:
 
-- `SALES_PAUSED = true`: el catálogo se sigue viendo, pero arriba aparece el cartel **"Muy pronto renovamos stock"**, los botones dicen "Muy pronto" y no se puede agregar nada al pedido. También se oculta el botón "Pedido".
-- `SALES_PAUSED = false`: se vende normalmente.
+- `'normal'`: se vende con el stock del Sheets.
+- `'encargo'`: todavía no llegó la yerba. Arriba del catálogo aparece el cartel **"Muy pronto renovamos stock"** invitando a dejar el encargo; los botones dicen **"Encargar"** (aunque el producto esté agotado), el carrito se llama **"Tu encargo"** y el botón **"Encargar por WhatsApp"**. El mensaje te llega marcado como **ENCARGO**. Como no hay stock real, el tope por producto es `PREORDER_MAX_PER_ITEM` (10). Siguen valiendo el mínimo de delivery, el nombre y la dirección.
+- `'pausa'`: solo se ve el catálogo con el cartel; no se puede pedir nada y se oculta el botón "Pedido".
 
-El título y el texto del cartel están en `SALES_PAUSED_TITLE` y `SALES_PAUSED_TEXT`. Después de cambiarlo, hay que publicar (push) para que Vercel lo despliegue.
-También se puede pisar desde Vercel con la variable de entorno `SALES_PAUSED` (`true` o `false`) y un redeploy, sin tocar el código.
+Los textos de los carteles están en `PREORDER_TITLE` / `PREORDER_TEXT` y `SALES_PAUSED_TITLE` / `SALES_PAUSED_TEXT`. Después de cambiar el modo, publicá (push) para que Vercel lo despliegue.
+También se puede pisar desde Vercel con la variable de entorno `SALES_MODE` (`normal`, `encargo` o `pausa`) y un redeploy, sin tocar el código.
 
 ## 6. "Quiénes somos"
 

@@ -74,16 +74,30 @@ export const PAYMENT_METHODS = ['Efectivo', 'Transferencia'] as const;
 export const SHOW_INTRO = true;
 
 /* ------------------------------------------------------------------ */
-/* Pausa de ventas                                                     */
+/* Modo de venta                                                       */
 /* ------------------------------------------------------------------ */
 
+export type SalesMode = 'normal' | 'encargo' | 'pausa';
+
 /**
- * Pausa de ventas (por ejemplo, mientras llega la mercadería).
- * true  = el catálogo se ve, pero con un cartel y sin poder agregar nada al pedido.
- * false = se vende normalmente.
- * Para volver a vender: poné `false`, guardá y publicá (push).
+ * Cómo se vende ahora:
+ * - 'normal'  → se vende con el stock del Sheets.
+ * - 'encargo' → todavía no llegó la yerba: se arma el pedido y se manda por WhatsApp
+ *               como ENCARGO. No depende del stock (tope: PREORDER_MAX_PER_ITEM por producto).
+ * - 'pausa'   → solo se ve el catálogo con un cartel; no se puede pedir nada.
+ * Después de cambiarlo, guardá y publicá (push).
  */
-export const SALES_PAUSED = true;
+export const SALES_MODE: SalesMode = 'encargo';
+
+/** Máximo de unidades por producto en un encargo (no hay stock real todavía). */
+export const PREORDER_MAX_PER_ITEM = 10;
+
+/** Cartel del catálogo en modo 'encargo'. */
+export const PREORDER_TITLE = 'Muy pronto renovamos stock';
+export const PREORDER_TEXT =
+  'Ya podés dejar tu encargo: armá tu pedido y mandalo por WhatsApp. Te avisamos cuando llegue la yerba para coordinar la entrega.';
+
+/** Cartel del catálogo en modo 'pausa'. */
 export const SALES_PAUSED_TITLE = 'Muy pronto renovamos stock';
 export const SALES_PAUSED_TEXT =
   'Estamos esperando que llegue la yerba nueva. Mientras tanto podés mirar el catálogo y escribirnos por WhatsApp.';

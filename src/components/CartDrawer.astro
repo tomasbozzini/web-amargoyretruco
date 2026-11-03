@@ -3,10 +3,18 @@
  * Panel del carrito (dialog nativo: atrapa el foco y se cierra con Esc).
  * El contenido de la lista lo arma src/scripts/app.ts con textContent.
  */
-import { BUSINESS, DELIVERY_FEE_INFO, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA } from '../config';
+import { BUSINESS, DELIVERY_FEE_INFO, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, type SalesMode } from '../config';
 import { formatPrice } from '../lib/price';
 import { CUSTOMER_ADDRESS_MAX, CUSTOMER_NAME_MAX } from '../lib/cart';
 import Icon from './Icon.astro';
+
+interface Props {
+  /** 'encargo': el pedido se manda como encargo (la yerba todavía no llegó). */
+  salesMode?: SalesMode;
+}
+
+const { salesMode = 'normal' } = Astro.props;
+const preorder = salesMode === 'encargo';
 ---
 
 <dialog id="cart" class="cart-panel" aria-labelledby="cart-title" data-cart-dialog>
@@ -14,7 +22,7 @@ import Icon from './Icon.astro';
     <header class="flex items-center justify-between gap-3 border-b border-verde-oscuro/15 px-4 py-3">
       <div>
         <p class="label text-base text-terracota-oscuro">Tu mano</p>
-        <h2 id="cart-title" class="font-display text-3xl leading-none">Tu pedido</h2>
+        <h2 id="cart-title" class="font-display text-3xl leading-none">{preorder ? 'Tu encargo' : 'Tu pedido'}</h2>
       </div>
       <button type="button" class="inline-flex size-12 items-center justify-center rounded-full hover:bg-crema" data-cart-close>
         <Icon name="close" class="size-6" />
@@ -36,6 +44,13 @@ import Icon from './Icon.astro';
         <button type="button" class="btn btn-green mt-5" data-cart-close data-go-catalog>Ver yerbas</button>
       </div>
 
+      {
+        preorder && (
+          <p class="mb-3 rounded-xl border-2 border-terracota bg-terracota/10 px-3 py-2 text-sm" data-preorder-note>
+            <strong class="text-terracota-oscuro">Es un encargo:</strong> la yerba todavía no llegó. Mandanos tu pedido y te avisamos por WhatsApp cuando esté, para coordinar la entrega.
+          </p>
+        )
+      }
       <ul class="divide-y divide-verde-oscuro/10" data-cart-lines aria-label="Productos en el pedido"></ul>
 
       <div data-cart-form hidden>
@@ -54,7 +69,7 @@ import Icon from './Icon.astro';
             {DELIVERY_FEE_INFO ?? 'Si elegís delivery, el envío lo coordinamos por WhatsApp.'}
           </p>
           <button type="button" class="min-h-11 shrink-0 rounded-lg px-2 text-sm font-semibold text-terracota-oscuro underline underline-offset-4 hover:bg-crema" data-cart-clear>
-            Vaciar pedido
+            {preorder ? 'Vaciar encargo' : 'Vaciar pedido'}
           </button>
         </div>
 
@@ -132,7 +147,7 @@ import Icon from './Icon.astro';
         data-whatsapp-order
       >
         <Icon name="whatsapp" class="size-6" />
-        Pedir por WhatsApp
+        {preorder ? 'Encargar por WhatsApp' : 'Pedir por WhatsApp'}
       </a>
       <p class="mt-2 text-center text-xs text-mate" id="cart-disclaimer">{ORDER_DISCLAIMER}.</p>
     </footer>
