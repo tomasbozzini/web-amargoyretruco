@@ -1,5 +1,5 @@
 ---
-import { ORDER_DISCLAIMER, WHATSAPP_GREETING, WHATSAPP_NUMBER } from '../config';
+import { ORDER_DISCLAIMER, SALES_PAUSED_TEXT, SALES_PAUSED_TITLE, WHATSAPP_GREETING, WHATSAPP_NUMBER } from '../config';
 import type { CatalogResult } from '../lib/catalog';
 import { buildWhatsAppUrl } from '../lib/whatsapp';
 import Icon from './Icon.astro';
@@ -7,9 +7,11 @@ import ProductCard from './ProductCard.astro';
 
 interface Props {
   catalog: CatalogResult;
+  /** Pausa de ventas: se muestra el cartel y no se puede agregar nada. */
+  salesPaused?: boolean;
 }
 
-const { catalog } = Astro.props;
+const { catalog, salesPaused = false } = Astro.props;
 const { products, brands, source } = catalog;
 const askListUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, '¡Hola Amargo y Retruco! ¿Me pasan la lista de yerbas y precios?');
 const consultUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
@@ -20,8 +22,32 @@ const consultUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
     <p class="section-kicker">Catálogo</p>
     <h2 id="catalogo-title" class="section-title mt-1">Las cartas sobre la mesa</h2>
     <p class="mt-3 max-w-2xl text-lg text-verde-oscuro/90">
-      Elegí tus yerbas y armá el pedido. Los precios son por paquete.
+      {salesPaused ? 'Mirá las yerbas que manejamos. Los precios son por paquete.' : 'Elegí tus yerbas y armá el pedido. Los precios son por paquete.'}
     </p>
+
+    {
+      salesPaused && (
+        <div
+          class="on-dark yerba-texture relative mt-6 overflow-hidden rounded-2xl bg-verde-oscuro px-5 py-6 text-crema shadow-lg ring-4 ring-terracota sm:flex sm:items-center sm:gap-6 sm:px-8"
+          role="note"
+          aria-labelledby="sales-paused-title"
+          data-sales-paused-banner
+        >
+          <div class="flex shrink-0 gap-1 text-[#e9a58f]" aria-hidden="true">
+            <Icon name="truck" class="size-10" />
+            <Icon name="mate" class="size-10" />
+          </div>
+          <div class="mt-3 flex-1 sm:mt-0">
+            <h3 id="sales-paused-title" class="font-display text-3xl leading-tight sm:text-4xl">{SALES_PAUSED_TITLE}</h3>
+            <p class="mt-2 text-lg text-crema/90">{SALES_PAUSED_TEXT}</p>
+          </div>
+          <a class="btn btn-outline-light mt-4 w-full shrink-0 sm:mt-0 sm:w-auto" href={consultUrl} target="_blank" rel="noopener noreferrer">
+            <Icon name="whatsapp" class="size-5" />
+            Escribinos
+          </a>
+        </div>
+      )
+    }
 
     {
       source === 'fallback' && products.length > 0 && (
@@ -97,7 +123,7 @@ const consultUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
 
           <ul class="mt-4 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4" data-product-grid>
             {products.map((product, index) => (
-              <ProductCard product={product} index={index} brandIndex={brands.indexOf(product.brand)} />
+              <ProductCard product={product} index={index} brandIndex={brands.indexOf(product.brand)} salesPaused={salesPaused} />
             ))}
           </ul>
 

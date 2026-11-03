@@ -63,6 +63,21 @@ export const DELIVERY_FEE_INFO: string | null = 'El delivery es sin cargo.';
 export const PAYMENT_METHODS = ['Efectivo', 'Transferencia'] as const;
 
 /* ------------------------------------------------------------------ */
+/* Pausa de ventas                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Pausa de ventas (por ejemplo, mientras llega la mercadería).
+ * true  = el catálogo se ve, pero con un cartel y sin poder agregar nada al pedido.
+ * false = se vende normalmente.
+ * Para volver a vender: poné `false`, guardá y publicá (push).
+ */
+export const SALES_PAUSED = true;
+export const SALES_PAUSED_TITLE = 'Muy pronto renovamos stock';
+export const SALES_PAUSED_TEXT =
+  'Estamos esperando que llegue la yerba nueva. Mientras tanto podés mirar el catálogo y escribirnos por WhatsApp.';
+
+/* ------------------------------------------------------------------ */
 /* Catálogo                                                            */
 /* ------------------------------------------------------------------ */
 

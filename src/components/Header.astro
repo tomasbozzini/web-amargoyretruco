@@ -2,6 +2,13 @@
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 
+interface Props {
+  /** Con las ventas en pausa no se muestra el botón del pedido. */
+  salesPaused?: boolean;
+}
+
+const { salesPaused = false } = Astro.props;
+
 const links = [
   { href: '#catalogo', label: 'Yerbas' },
   { href: '#como-comprar', label: 'Cómo comprar' },
@@ -31,21 +38,25 @@ const links = [
       </ul>
     </nav>
 
-    <button
-      type="button"
-      class="relative inline-flex min-h-12 items-center gap-2 rounded-xl bg-verde-oscuro px-4 font-bold text-crema hover:bg-verde"
-      aria-haspopup="dialog"
-      aria-controls="cart"
-      data-cart-open
-    >
-      <Icon name="cart" class="size-6" />
-      <span>Pedido</span>
-      <span
-        class="absolute -top-2 -right-2 inline-flex min-w-6 items-center justify-center rounded-full bg-terracota px-1.5 text-sm leading-6 text-white ring-2 ring-crema"
-        data-cart-count
-        hidden
-      ></span>
-      <span class="sr-only" data-cart-count-sr>, vacío</span>
-    </button>
+    {
+      !salesPaused && (
+        <button
+          type="button"
+          class="relative inline-flex min-h-12 items-center gap-2 rounded-xl bg-verde-oscuro px-4 font-bold text-crema hover:bg-verde"
+          aria-haspopup="dialog"
+          aria-controls="cart"
+          data-cart-open
+        >
+          <Icon name="cart" class="size-6" />
+          <span>Pedido</span>
+          <span
+            class="absolute -top-2 -right-2 inline-flex min-w-6 items-center justify-center rounded-full bg-terracota px-1.5 text-sm leading-6 text-white ring-2 ring-crema"
+            data-cart-count
+            hidden
+          ></span>
+          <span class="sr-only" data-cart-count-sr>, vacío</span>
+        </button>
+      )
+    }
   </div>
 </header>

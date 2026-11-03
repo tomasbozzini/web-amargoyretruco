@@ -6,6 +6,7 @@ import { expect, test, type Page } from '@playwright/test';
  */
 const MOCK = 'http://127.0.0.1:4400';
 const FALLBACK_SITE = 'http://127.0.0.1:4322';
+const PAUSED_SITE = 'http://127.0.0.1:4323';
 const PHONE = '5491133907596';
 const DISCLAIMER = 'Precios y stock sujetos a confirmación por WhatsApp';
 
@@ -57,6 +58,7 @@ test('muestra el catálogo del Sheets con precios y estados de stock', async ({ 
   expect(response?.status()).toBe(200);
 
   await expect(page.locator('[data-product]')).toHaveCount(6);
+  await expect(page.locator('[data-sales-paused-banner]')).toHaveCount(0);
   await expect(page.locator('[data-brand-chip]')).toHaveText(['Todas', 'Baldo', 'Canarias', 'Rei Verde', 'Sara']);
 
   expect(norm(await card(page, ID.baldo500).locator('[data-price-value]').innerText())).toBe('$ 8.600');
@@ -418,4 +420,32 @@ test('Sheets sin productos para mostrar: mensaje amable con link a WhatsApp', as
   await expect(page.getByRole('heading', { name: 'Estamos barajando de nuevo' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Pedir la lista por WhatsApp' })).toHaveAttribute('href', new RegExp(`^https://wa\\.me/${PHONE}\\?text=`));
   await request.post(`${MOCK}/control/ok`);
+});
+
+test('ventas en pausa: cartel "Muy pronto renovamos stock" y no se puede agregar', async ({ page }) => {
+  const res = await page.goto(PAUSED_SITE);
+  expect(res?.status()).toBe(200);
+  const banner = page.locator('[data-sales-paused-banner]');
+  await expect(banner).toBeVisible();
+  await expect(banner.getByRole('heading', { name: 'Muy pronto renovamos stock' })).toBeVisible();
+  await expect(banner.getByRole('link', { name: 'Escribinos' })).toHaveAttribute('href', new RegExp(`^https://wa\\.me/${PHONE}`));
+
+  // El catálogo se sigue viendo, pero nada se puede agregar.
+  await expect(page.locator('[data-product]')).toHaveCount(6);
+  const addButtons = page.locator('[data-add]');
+  for (const button of await addButtons.all()) {
+    await expect(button).toBeDisabled();
+    await expect(button).toContainText('Muy pronto');
+  }
+  await expect(page.locator('[data-card-stepper]')).toHaveCount(0);
+  await expect(page.getByText('Últimas unidades')).toHaveCount(0);
+  await expect(page.locator('header [data-cart-open]')).toHaveCount(0);
+
+  // Ni forzando el botón desde la consola se agrega algo al pedido.
+  await addButtons.first().evaluate((button) => {
+    (button as HTMLButtonElement).disabled = false;
+    (button as HTMLButtonElement).click();
+  });
+  await expect(page.locator('[data-mobile-cart-bar]')).toBeHidden();
+  await expect(page.locator('[data-toast]')).toBeHidden();
 });

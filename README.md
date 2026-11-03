@@ -121,6 +121,16 @@ Lo pendiente está marcado con `// TODO`.
 
 > No pongas alias, CBU ni claves en `config.ts`: todo lo que está ahí puede llegar al navegador.
 
+### Pausar las ventas (por ejemplo, mientras llega la yerba)
+
+En `src/config.ts`:
+
+- `SALES_PAUSED = true`: el catálogo se sigue viendo, pero arriba aparece el cartel **"Muy pronto renovamos stock"**, los botones dicen "Muy pronto" y no se puede agregar nada al pedido. También se oculta el botón "Pedido".
+- `SALES_PAUSED = false`: se vende normalmente.
+
+El título y el texto del cartel están en `SALES_PAUSED_TITLE` y `SALES_PAUSED_TEXT`. Después de cambiarlo, hay que publicar (push) para que Vercel lo despliegue.
+También se puede pisar desde Vercel con la variable de entorno `SALES_PAUSED` (`true` o `false`) y un redeploy, sin tocar el código.
+
 ## 6. "Quiénes somos"
 
 Editá **`src/content/quienes-somos.md`**. Es Markdown: párrafos separados por una línea en blanco, `**negrita**` y `*cursiva*`. Arriba (entre los `---`) podés cambiar el título y la etiqueta.

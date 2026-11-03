@@ -56,11 +56,13 @@ const config = {
   phone: configNode?.dataset.phone ?? '',
   minDelivery: Number(configNode?.dataset.minDelivery ?? 0) || 0,
   disclaimer: configNode?.dataset.disclaimer ?? '',
+  salesPaused: configNode?.dataset.salesPaused === 'true',
 };
 
 const cards = $$<HTMLElement>('[data-product]');
 const products = new Map<string, CartProduct>();
-for (const card of cards) {
+// Con las ventas en pausa no se carga ningún producto en el carrito: no se puede agregar nada.
+for (const card of config.salesPaused ? [] : cards) {
   const { id = '', brand = '', name = '', presentation = '' } = card.dataset;
   const price = Number(card.dataset.price);
   const stock = Number(card.dataset.stock);

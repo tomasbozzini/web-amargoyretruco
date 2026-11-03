@@ -4,7 +4,7 @@
  * del Google Sheets en cada pedido al CDN; Vercel cachea la respuesta 5 minutos
  * y la sigue sirviendo mientras se actualiza en segundo plano.
  */
-import { CATALOG_CSV_URL } from 'astro:env/server';
+import { CATALOG_CSV_URL, SALES_PAUSED as SALES_PAUSED_ENV } from 'astro:env/server';
 import About from '../components/About.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 import Catalog from '../components/Catalog.astro';
@@ -14,21 +14,23 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import HowToBuy from '../components/HowToBuy.astro';
-import { BUSINESS, CATALOG_CACHE_CONTROL, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, WHATSAPP_NUMBER } from '../config';
+import { BUSINESS, CATALOG_CACHE_CONTROL, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, SALES_PAUSED, WHATSAPP_NUMBER } from '../config';
 import Base from '../layouts/Base.astro';
 import { loadCatalog } from '../lib/catalog';
 
 export const prerender = false;
 
 const catalog = await loadCatalog({ url: CATALOG_CSV_URL });
+/** Pausa de ventas: src/config.ts, salvo que la variable de entorno SALES_PAUSED diga otra cosa. */
+const salesPaused = SALES_PAUSED_ENV ?? SALES_PAUSED;
 Astro.response.headers.set('Cache-Control', CATALOG_CACHE_CONTROL);
 ---
 
 <Base structuredData>
-  <Header />
+  <Header salesPaused={salesPaused} />
   <main id="contenido">
     <Hero />
-    <Catalog catalog={catalog} />
+    <Catalog catalog={catalog} salesPaused={salesPaused} />
     <HowToBuy />
     <FAQ />
     <About />
@@ -47,6 +49,7 @@ Astro.response.headers.set('Cache-Control', CATALOG_CACHE_CONTROL);
     data-phone={WHATSAPP_NUMBER}
     data-min-delivery={String(MIN_DELIVERY_AMOUNT)}
     data-disclaimer={ORDER_DISCLAIMER}
+    data-sales-paused={String(salesPaused)}
   >
   </div>
   <script>

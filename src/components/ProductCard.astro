@@ -14,11 +14,15 @@ interface Props {
   index: number;
   /** Posición de la marca en el catálogo (define los colores de la ilustración). */
   brandIndex?: number;
+  /** Pausa de ventas: sin etiquetas de stock y sin poder agregar ("Muy pronto"). */
+  salesPaused?: boolean;
 }
 
-const { product, index, brandIndex } = Astro.props;
+const { product, index, brandIndex, salesPaused = false } = Astro.props;
 const status = stockStatus(product.stock);
 const soldOut = status === 'soldout';
+/** No se puede agregar: agotado o ventas en pausa. */
+const unavailable = soldOut || salesPaused;
 const fullName = fullProductName(product.brand, product.name);
 const searchText = normalizeForSearch(`${product.brand} ${product.name} ${product.presentation}`);
 const titleId = `p-${product.id}-title`;
@@ -27,7 +31,7 @@ const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
 
 <li class="flex" data-product-item>
   <article
-    class:list={['naipe flex w-full flex-col overflow-hidden', soldOut && 'opacity-80']}
+    class:list={['naipe flex w-full flex-col overflow-hidden', soldOut && !salesPaused && 'opacity-80']}
     aria-labelledby={titleId}
     data-product
     data-id={product.id}
@@ -57,7 +61,7 @@ const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
         )
       }
       {
-        soldOut ? (
+        salesPaused ? null : soldOut ? (
           <span class="label absolute top-1.5 right-1.5 rounded px-1.5 pt-[3px] pb-[2px] text-[0.7rem] shadow-sm ring-1 sm:top-2 sm:right-2 sm:px-2 sm:py-1 sm:text-sm bg-verde-oscuro text-crema ring-crema">Agotado</span>
         ) : (
           status === 'low' && (
@@ -77,12 +81,16 @@ const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
       <p class="min-h-5 text-sm font-semibold text-terracota-oscuro" data-in-cart></p>
       <button
         type="button"
-        class:list={['btn mt-1 w-full', soldOut ? '' : 'btn-green']}
+        class:list={['btn mt-1 w-full', unavailable ? '' : 'btn-green']}
         data-add
-        disabled={soldOut}
+        disabled={unavailable}
       >
         {
-          soldOut ? (
+          salesPaused ? (
+            <>
+              Muy pronto<span class="sr-only">: {itemLabel}. Renovamos stock pronto.</span>
+            </>
+          ) : soldOut ? (
             <>
               Agotado<span class="sr-only">: {itemLabel}</span>
             </>
@@ -97,7 +105,7 @@ const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
       </button>
       {
         /* Al agregar, el botón se reemplaza por este selector de cantidad (lo maneja src/scripts/app.ts). */
-        !soldOut && (
+        !unavailable && (
           <div class="mt-1 flex min-h-12 items-stretch rounded-xl border-2 border-verde bg-white" data-card-stepper hidden>
             <button
               type="button"
