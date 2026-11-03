@@ -21,7 +21,6 @@ import {
   MIN_DELIVERY_AMOUNT,
   ORDER_DISCLAIMER,
   PICKUP_AREA,
-  PREORDER_MAX_PER_ITEM,
   SALES_MODE,
   SHOW_INTRO,
   WHATSAPP_NUMBER,
@@ -63,7 +62,6 @@ Astro.response.headers.set('Cache-Control', CATALOG_CACHE_CONTROL);
     data-min-delivery={String(MIN_DELIVERY_AMOUNT)}
     data-disclaimer={ORDER_DISCLAIMER}
     data-sales-mode={salesMode}
-    data-preorder-max={String(PREORDER_MAX_PER_ITEM)}
   >
   </div>
   <script>

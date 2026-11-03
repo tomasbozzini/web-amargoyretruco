@@ -78,13 +78,12 @@ const config = {
   disclaimer: configNode?.dataset.disclaimer ?? '',
   /** 'normal' | 'encargo' | 'pausa' (ver SALES_MODE en src/config.ts). */
   salesMode: configNode?.dataset.salesMode ?? 'normal',
-  preorderMax: Number(configNode?.dataset.preorderMax ?? 0) || 10,
 };
 const preorder = config.salesMode === 'encargo';
 /** Palabra para los mensajes: "pedido" o "encargo". */
 const orderWord = preorder ? 'encargo' : 'pedido';
 /** Aviso cuando se llega al tope de un producto. */
-const maxText = (max: number) => (preorder ? `Máximo por encargo: ${max}` : `Máximo disponible: ${max}`);
+const maxText = (max: number) => `Máximo disponible: ${max}`;
 
 const cards = $$<HTMLElement>('[data-product]');
 const products = new Map<string, CartProduct>();
@@ -92,10 +91,9 @@ const products = new Map<string, CartProduct>();
 for (const card of config.salesMode === 'pausa' ? [] : cards) {
   const { id = '', brand = '', name = '', presentation = '' } = card.dataset;
   const price = Number(card.dataset.price);
-  const realStock = Number(card.dataset.stock);
-  if (!id || !Number.isFinite(price) || price <= 0 || !Number.isInteger(realStock) || realStock < 0) continue;
-  // En encargo no hay stock real todavía: el tope es PREORDER_MAX_PER_ITEM por producto.
-  const stock = preorder ? config.preorderMax : realStock;
+  const stock = Number(card.dataset.stock);
+  if (!id || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) continue;
+  // Normal y encargo respetan el stock del Sheets.
   products.set(id, { id, brand, name, presentation, price, stock });
 }
 

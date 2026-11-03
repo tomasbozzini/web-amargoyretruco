@@ -453,42 +453,42 @@ test('ventas en pausa: cartel "Muy pronto renovamos stock" y no se puede agregar
   await expect(page.locator('[data-toast]')).toBeHidden();
 });
 
-test('modo encargo: se puede encargar aunque no haya stock y el mensaje llega como encargo', async ({ page }) => {
+test('modo encargo: respeta el stock del Sheets y el mensaje llega como encargo', async ({ page }) => {
   const res = await page.goto(PREORDER_SITE);
   expect(res?.status()).toBe(200);
   const banner = page.locator('[data-sales-banner="encargo"]');
   await expect(banner.getByRole('heading', { name: 'Muy pronto renovamos stock' })).toBeVisible();
   await expect(banner).toContainText('Ya podés dejar tu encargo');
 
-  // Sin etiquetas de stock; todos los productos se pueden encargar, incluso el agotado.
-  await expect(page.getByText('Últimas unidades')).toHaveCount(0);
-  await expect(page.getByText('Agotado', { exact: true })).toHaveCount(0);
-  const rei = card(page, ID.reiVerde); // stock 0 en el Sheets
-  await expect(rei.locator('[data-add]')).toBeEnabled();
-  await expect(rei.locator('[data-add]')).toContainText('Encargar');
-  await rei.locator('[data-add]').click();
-  await expect(page.locator('[data-toast]')).toContainText('al encargo');
-  await expect(rei.locator('[data-card-qty]')).toHaveText('1');
+  // Stock del Sheets: el agotado no se puede encargar y se ven las etiquetas de stock.
+  const rei = card(page, ID.reiVerde); // stock 0
+  await expect(rei.locator('[data-add]')).toBeDisabled();
+  await expect(rei.locator('[data-add]')).toContainText('Agotado');
+  await expect(card(page, ID.especial).getByText('Últimas unidades')).toBeVisible();
 
-  // Tope por producto en encargo: 10 (PREORDER_MAX_PER_ITEM).
-  const plus = rei.locator('[data-card-increase]');
-  for (let i = 0; i < 9; i += 1) await plus.click();
-  await expect(rei.locator('[data-card-qty]')).toHaveText('10');
-  await expect(plus).toBeDisabled();
-  await expect(rei.locator('[data-in-cart]')).toHaveText('Máximo por encargo: 10');
+  // Con stock: "Encargar" y tope = stock del Sheets (2).
+  const especial = card(page, ID.especial);
+  await expect(especial.locator('[data-add]')).toContainText('Encargar');
+  await especial.locator('[data-add]').click();
+  await expect(page.locator('[data-toast]')).toContainText('al encargo');
+  await especial.locator('[data-card-increase]').click();
+  await expect(especial.locator('[data-card-qty]')).toHaveText('2');
+  await expect(especial.locator('[data-card-increase]')).toBeDisabled();
+  await expect(especial.locator('[data-in-cart]')).toHaveText('Máximo disponible: 2');
 
   // Carrito como encargo.
   await page.locator('header [data-cart-open]').click();
   const cart = page.locator('[data-cart-dialog]');
   await expect(cart.getByRole('heading', { name: 'Tu encargo' })).toBeVisible();
   await expect(cart.locator('[data-preorder-note]')).toBeVisible();
+  await expect(cart.getByRole('button', { name: 'Sumar uno de Canarias Edición Especial' })).toBeDisabled();
   await expect(orderLink(page)).toContainText('Encargar por WhatsApp');
   await cart.getByLabel(/Retiro en zona Campus universitario/).check();
   await cart.getByLabel('Tu nombre', { exact: true }).fill('Juana');
   await expect(page.locator('[data-cart-help]')).toHaveText('Se abre WhatsApp con tu encargo listo para enviar.');
   const message = await orderMessage(page);
   expect(message.split('\n')[0]).toBe('¡Hola Amargo y Retruco! 🧉 Quiero dejar este *ENCARGO* para cuando llegue la yerba:');
-  expect(message).toContain('• 10 x Rei Verde Tradicional (500 g) - $ 7.400 c/u = $ 74.000');
+  expect(message).toContain('• 2 x Canarias Edición Especial (500 g) - $ 10.500 c/u = $ 21.000');
   expect(message).toContain('Nombre: Juana');
   expect(message).toContain(DISCLAIMER);
 });

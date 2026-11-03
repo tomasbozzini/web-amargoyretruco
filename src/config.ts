@@ -83,14 +83,11 @@ export type SalesMode = 'normal' | 'encargo' | 'pausa';
  * Cómo se vende ahora:
  * - 'normal'  → se vende con el stock del Sheets.
  * - 'encargo' → todavía no llegó la yerba: se arma el pedido y se manda por WhatsApp
- *               como ENCARGO. No depende del stock (tope: PREORDER_MAX_PER_ITEM por producto).
+ *               como ENCARGO, respetando el stock del Sheets (el que vas a tener).
  * - 'pausa'   → solo se ve el catálogo con un cartel; no se puede pedir nada.
  * Después de cambiarlo, guardá y publicá (push).
  */
 export const SALES_MODE: SalesMode = 'encargo';
-
-/** Máximo de unidades por producto en un encargo (no hay stock real todavía). */
-export const PREORDER_MAX_PER_ITEM = 10;
 
 /** Cartel del catálogo en modo 'encargo'. */
 export const PREORDER_TITLE = 'Muy pronto renovamos stock';

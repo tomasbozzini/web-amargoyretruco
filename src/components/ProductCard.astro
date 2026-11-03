@@ -17,7 +17,7 @@ interface Props {
   brandIndex?: number;
   /**
    * 'pausa': sin etiquetas de stock y sin poder agregar ("Muy pronto").
-   * 'encargo': sin etiquetas de stock y se puede encargar aunque esté agotado.
+   * 'encargo': como la venta normal (respeta el stock), pero el botón dice "Encargar".
    */
   salesMode?: SalesMode;
 }
@@ -26,11 +26,11 @@ const { product, index, brandIndex, salesMode = 'normal' } = Astro.props;
 const salesPaused = salesMode === 'pausa';
 const preorder = salesMode === 'encargo';
 const status = stockStatus(product.stock);
-const soldOut = status === 'soldout' && !preorder;
-/** No se puede agregar: agotado (en venta normal) o ventas en pausa. */
+const soldOut = status === 'soldout';
+/** No se puede agregar: agotado o ventas en pausa. */
 const unavailable = soldOut || salesPaused;
-/** Las etiquetas de stock solo tienen sentido en venta normal. */
-const showStock = salesMode === 'normal';
+/** Etiquetas de stock ("Agotado", "Últimas unidades"): en venta normal y en encargo. */
+const showStock = !salesPaused;
 const fullName = fullProductName(product.brand, product.name);
 const searchText = normalizeForSearch(`${product.brand} ${product.name} ${product.presentation}`);
 const titleId = `p-${product.id}-title`;

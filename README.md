@@ -140,7 +140,7 @@ Al entrar a la web aparece una intro corta (un termo ceba un mate, unos 2,5 segu
 En `src/config.ts`, `SALES_MODE`:
 
 - `'normal'`: se vende con el stock del Sheets.
-- `'encargo'`: todavía no llegó la yerba. Arriba del catálogo aparece el cartel **"Muy pronto renovamos stock"** invitando a dejar el encargo; los botones dicen **"Encargar"** (aunque el producto esté agotado), el carrito se llama **"Tu encargo"** y el botón **"Encargar por WhatsApp"**. El mensaje te llega marcado como **ENCARGO**. Como no hay stock real, el tope por producto es `PREORDER_MAX_PER_ITEM` (10). Siguen valiendo el mínimo de delivery, el nombre y la dirección.
+- `'encargo'`: todavía no llegó la yerba. Arriba del catálogo aparece el cartel **"Muy pronto renovamos stock"** invitando a dejar el encargo; los botones dicen **"Encargar"**, el carrito se llama **"Tu encargo"** y el botón **"Encargar por WhatsApp"**. El mensaje te llega marcado como **ENCARGO**. Se respeta el stock del Sheets igual que en la venta normal (cargá ahí el stock que vas a tener): con stock 0 aparece "Agotado". Siguen valiendo el mínimo de delivery, el nombre y la dirección.
 - `'pausa'`: solo se ve el catálogo con el cartel; no se puede pedir nada y se oculta el botón "Pedido".
 
 Los textos de los carteles están en `PREORDER_TITLE` / `PREORDER_TEXT` y `SALES_PAUSED_TITLE` / `SALES_PAUSED_TEXT`. Después de cambiar el modo, publicá (push) para que Vercel lo despliegue.
