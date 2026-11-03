@@ -55,10 +55,10 @@ export const PICKUP_AREA = 'zona Campus universitario';
 export const BUSINESS_HOURS: string | null = null;
 
 /**
- * Costo del envío. `null` = no se informa en la web (se coordina por WhatsApp).
- * TODO: completar si querés mostrarlo, por ejemplo 'El envío dentro de Tandil cuesta $1.500.'
+ * Costo del envío: se muestra en el carrito y en las preguntas frecuentes.
+ * `null` = no se informa en la web (se coordina por WhatsApp).
  */
-export const DELIVERY_FEE_INFO: string | null = null;
+export const DELIVERY_FEE_INFO: string | null = 'El delivery es sin cargo.';
 
 export const PAYMENT_METHODS = ['Efectivo', 'Transferencia'] as const;
 

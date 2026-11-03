@@ -114,7 +114,7 @@ Todo lo editable a mano está en **`src/config.ts`**, con comentarios:
 - `MIN_DELIVERY_AMOUNT`: compra mínima para delivery (**provisorio: 20000**).
 - `PICKUP_AREA`: zona de retiro (`zona Campus universitario`). La dirección exacta no se publica.
 - `BUSINESS_HOURS`: horarios (`null` = "los coordinamos por WhatsApp").
-- `DELIVERY_FEE_INFO`: texto sobre el costo del envío (`null` = no se muestra).
+- `DELIVERY_FEE_INFO`: texto sobre el costo del envío (hoy: "El delivery es sin cargo."; `null` = no se muestra).
 - `LOW_STOCK_THRESHOLD`, `MAX_REASONABLE_PRICE`, `CATALOG_CACHE_CONTROL`: reglas del catálogo.
 
 Lo pendiente está marcado con `// TODO`.
@@ -140,7 +140,7 @@ Regenera `public/og-image.png` (la imagen que aparece al compartir el link en Wh
 ## 8. Cómo funciona el pedido
 
 1. La persona elige yerbas y cantidades (con un máximo igual al stock).
-2. En el carrito elige **Delivery en Tandil** o **Retiro en zona Campus universitario**.
+2. En el carrito elige **Delivery sin cargo en Tandil** o **Retiro en zona Campus universitario**.
    - Si elige delivery y el total no llega a `MIN_DELIVERY_AMOUNT`, la web le muestra cuánto falta, **bloquea el pedido con delivery** y le ofrece cambiar a retiro.
 3. Nombre y zona/barrio son opcionales y **no se guardan**: solo se agregan al mensaje.
 4. El botón **Pedir por WhatsApp** abre `wa.me/5491133907596` con el mensaje armado: saludo, productos (cantidad × producto, presentación, precio), total, entrega, nombre, zona y la leyenda **"Precios y stock sujetos a confirmación por WhatsApp"**.

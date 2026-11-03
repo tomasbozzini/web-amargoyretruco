@@ -146,7 +146,7 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
   await expect(page.locator('[data-cart-help]')).toHaveText('Elegí si lo querés por delivery o lo retirás.');
 
   // Delivery por debajo del mínimo ($ 20.000): bloqueado, muestra cuánto falta.
-  await cart.getByLabel(/Delivery en Tandil/).check();
+  await cart.getByLabel(/Delivery sin cargo en Tandil/).check();
   await expect(cart.locator('[data-min-warning]')).toBeVisible();
   expect(norm(await cart.locator('[data-min-missing]').innerText())).toBe('$ 2.800');
   await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
@@ -163,7 +163,7 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
   expect(message).toContain(DISCLAIMER);
 
   // Vuelve a delivery y suma uno: $ 25.800 supera el mínimo.
-  await cart.getByLabel(/Delivery en Tandil/).check();
+  await cart.getByLabel(/Delivery sin cargo en Tandil/).check();
   await cart.getByRole('button', { name: 'Sumar uno de Baldo Tradicional' }).click();
   await expect(cart.getByLabel('Cantidad: 3')).toBeVisible();
   expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe('$ 25.800');
@@ -284,6 +284,8 @@ test('preguntas frecuentes en acordeón accesible', async ({ page }) => {
   await delivery.locator('summary').click();
   await expect(delivery.getByText(/solo dentro de Tandil, con una compra mínima de \$\s20\.000/)).toBeVisible();
   await expect(page.locator('details', { hasText: '¿Cómo pago?' })).toContainText('Los datos para transferir te los pasamos por WhatsApp');
+  await expect(delivery).toContainText('El delivery es sin cargo.');
+  await expect(page.locator('#inicio').getByText(/Delivery sin cargo en Tandil \(mín\. \$\s20\.000\)/)).toBeVisible();
 });
 
 test('headers de seguridad, caché del CDN, SEO', async ({ page, request }) => {
