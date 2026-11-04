@@ -79,7 +79,7 @@ const consultUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
 
     {
       products.length === 0 ? (
-        <div class="naipe mt-10 px-6 py-10 text-center" data-catalog-empty>
+        <div id="yerbas" class="naipe mt-10 px-6 py-10 text-center" data-catalog-empty>
           <Icon name="mate" class="mx-auto size-12 text-verde" />
           <h3 class="mt-3 font-display text-3xl">Estamos barajando de nuevo</h3>
           <p class="mx-auto mt-2 max-w-md text-lg">
@@ -141,7 +141,8 @@ const consultUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, WHATSAPP_GREETING);
             {products.length === 1 ? '1 yerba' : `${products.length} yerbas`}
           </p>
 
-          <ul class="mt-4 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4" data-product-grid>
+          {/* "Ver yerbas" y el menú llevan acá (#yerbas): directo a los productos, salteando el cartel. */}
+          <ul id="yerbas" class="mt-4 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4" data-product-grid>
             {products.map((product, index) => (
               <ProductCard product={product} index={index} brandIndex={brands.indexOf(product.brand)} salesMode={salesMode} />
             ))}

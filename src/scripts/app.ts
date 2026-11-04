@@ -321,7 +321,7 @@ for (const button of $$('[data-cart-open]')) button.addEventListener('click', op
 for (const button of $$('[data-cart-close]')) {
   button.addEventListener('click', () => {
     closeCart();
-    if (button.hasAttribute('data-go-catalog')) $('#catalogo')?.scrollIntoView();
+    if (button.hasAttribute('data-go-catalog')) $('#yerbas')?.scrollIntoView();
   });
 }
 // Click en el fondo oscuro cierra el panel.

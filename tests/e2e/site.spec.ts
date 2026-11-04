@@ -494,6 +494,14 @@ test('modo encargo: respeta el stock del Sheets y el mensaje llega como encargo'
   expect(message).toContain(DISCLAIMER);
 });
 
+test('"Ver yerbas" lleva directo a los productos (no al cartel)', async ({ page }) => {
+  await page.goto(PREORDER_SITE);
+  await page.getByRole('link', { name: 'Ver yerbas' }).click();
+  await expect(page).toHaveURL(/#yerbas$/);
+  await expect(page.locator('[data-product]').first()).toBeInViewport();
+  await expect(page.locator('[data-sales-banner]')).not.toBeInViewport();
+});
+
 test.describe('intro del mate', () => {
   test.use({ reducedMotion: 'no-preference' });
 
