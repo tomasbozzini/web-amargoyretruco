@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { PREORDER_TITLE, RESTOCK_DATE } from '../../src/config';
+import { MIN_DELIVERY_AMOUNT, PREORDER_TITLE, RESTOCK_DATE } from '../../src/config';
+import { formatPricePlain } from '../../src/lib/price';
 
 /**
  * Flujo completo en mobile contra el build de producción.
@@ -22,6 +23,8 @@ const ID = {
 };
 
 /** Normaliza espacios duros (es-AR formatea "$ 8.600" con NBSP). */
+/** "$ 15.000" como regex tolerante al espacio duro de es-AR. */
+const moneyRe = (value: number) => formatPricePlain(value).replace(/[.$]/g, '\\$&').replace(' ', '\\s');
 const norm = (text: string | null) => (text ?? '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
 
 const card = (page: Page, id: string) => page.locator(`[data-product][data-id="${id}"]`);
@@ -131,31 +134,38 @@ test('filtros por marca, buscador y orden por precio', async ({ page }) => {
 });
 
 test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', async ({ page, context }) => {
+  // Baldo 500 g cuesta $ 8.600 en el CSV de prueba. Se arranca con la mayor cantidad que
+  // NO llega al mínimo de delivery (MIN_DELIVERY_AMOUNT) y después se suma una.
+  const unit = 8600;
+  const below = Math.max(1, Math.ceil(MIN_DELIVERY_AMOUNT / unit) - 1);
+  const above = below + 1;
+  const money = formatPricePlain;
+
   await page.goto('/');
   const baldo = card(page, ID.baldo500);
   await baldo.locator('[data-add]').click();
-  await baldo.locator('[data-card-increase]').click();
+  for (let i = 1; i < below; i += 1) await baldo.locator('[data-card-increase]').click();
 
-  await expect(page.locator('[data-cart-count]')).toHaveText('2');
-  await expect(baldo.locator('[data-card-qty]')).toHaveText('2');
+  await expect(page.locator('[data-cart-count]')).toHaveText(String(below));
+  await expect(baldo.locator('[data-card-qty]')).toHaveText(String(below));
   await expect(page.locator('[data-mobile-cart-bar]')).toBeVisible();
-  expect(norm(await page.locator('[data-mobile-cart-summary]').innerText())).toBe('2 · $ 17.200');
+  expect(norm(await page.locator('[data-mobile-cart-summary]').innerText())).toBe(`${below} · ${money(unit * below)}`);
 
   await page.locator('[data-mobile-cart-bar] [data-cart-open]').click();
   const cart = page.locator('[data-cart-dialog]');
   await expect(cart).toBeVisible();
   await expect(cart.locator('[data-cart-lines] li')).toHaveCount(1);
-  expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe('$ 17.200');
-  await expect(cart.getByText(/El delivery es sin cargo con una compra mínima de \$\s20\.000\./)).toBeVisible();
+  expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe(money(unit * below));
+  await expect(cart.getByText(new RegExp(`El delivery es sin cargo con una compra mínima de ${moneyRe(MIN_DELIVERY_AMOUNT)}\\.`))).toBeVisible();
 
   // Sin elegir entrega: no se puede pedir.
   await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
   await expect(page.locator('[data-cart-help]')).toHaveText('Elegí si lo querés por delivery o lo retirás.');
 
-  // Delivery por debajo del mínimo ($ 20.000): bloqueado, muestra cuánto falta.
+  // Delivery por debajo del mínimo: bloqueado, muestra cuánto falta.
   await cart.getByLabel(/Delivery sin cargo en Tandil/).check();
   await expect(cart.locator('[data-min-warning]')).toBeVisible();
-  expect(norm(await cart.locator('[data-min-missing]').innerText())).toBe('$ 2.800');
+  expect(norm(await cart.locator('[data-min-missing]').innerText())).toBe(money(MIN_DELIVERY_AMOUNT - unit * below));
   await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
   await expect(orderLink(page)).not.toHaveAttribute('href', /.+/);
 
@@ -179,16 +189,16 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
   await expect(orderLink(page)).not.toHaveAttribute('aria-disabled', 'true');
   let message = await orderMessage(page);
   expect(message).toContain('Entrega: Retiro en zona Campus universitario');
-  expect(message).toContain('*Total: $ 17.200*');
+  expect(message).toContain(`*Total: ${money(unit * below)}*`);
   expect(message).toContain('Nombre: Juan');
   expect(message).not.toContain('Dirección:');
   expect(message).toContain(DISCLAIMER);
 
-  // Vuelve a delivery y suma uno: $ 25.800 supera el mínimo, pero falta la dirección.
+  // Vuelve a delivery y suma uno: supera el mínimo, pero falta la dirección.
   await cart.getByLabel(/Delivery sin cargo en Tandil/).check();
   await cart.getByRole('button', { name: 'Sumar uno de Baldo Tradicional' }).click();
-  await expect(cart.getByLabel('Cantidad: 3')).toBeVisible();
-  expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe('$ 25.800');
+  await expect(cart.getByLabel(`Cantidad: ${above}`)).toBeVisible();
+  expect(norm(await cart.locator('[data-cart-total]').innerText())).toBe(money(unit * above));
   await expect(cart.locator('[data-min-warning]')).toBeHidden();
   await expect(cart.getByLabel('Dirección de entrega')).toBeVisible();
   await expect(orderLink(page)).toHaveAttribute('aria-disabled', 'true');
@@ -205,9 +215,9 @@ test('carrito: mínimo de delivery, cambio a retiro y mensaje de WhatsApp', asyn
     [
       '¡Hola Amargo y Retruco! 🧉 Quiero hacer este pedido:',
       '',
-      '• 3 x Baldo Tradicional (500 g) - $ 8.600 c/u = $ 25.800',
+      `• ${above} x Baldo Tradicional (500 g) - $ 8.600 c/u = ${money(unit * above)}`,
       '',
-      '*Total: $ 25.800*',
+      `*Total: ${money(unit * above)}*`,
       'Entrega: Delivery en Tandil',
       'Nombre: Juan',
       'Dirección: Av. Colón 123',
@@ -352,10 +362,10 @@ test('preguntas frecuentes en acordeón accesible', async ({ page }) => {
   const delivery = page.locator('details', { hasText: '¿Hacen delivery?' });
   await expect(delivery.getByText(/solo dentro de Tandil/)).toBeHidden();
   await delivery.locator('summary').click();
-  await expect(delivery.getByText(/solo dentro de Tandil, con una compra mínima de \$\s20\.000/)).toBeVisible();
+  await expect(delivery.getByText(new RegExp(`solo dentro de Tandil, con una compra mínima de ${moneyRe(MIN_DELIVERY_AMOUNT)}`))).toBeVisible();
   await expect(page.locator('details', { hasText: '¿Cómo pago?' })).toContainText('Los datos para transferir te los pasamos por WhatsApp');
   await expect(delivery).toContainText('El delivery es sin cargo.');
-  await expect(page.locator('#inicio').getByText(/Delivery sin cargo en Tandil \(mín\. \$\s20\.000\)/)).toBeVisible();
+  await expect(page.locator('#inicio').getByText(new RegExp(`Delivery sin cargo en Tandil \\(mín\\. ${moneyRe(MIN_DELIVERY_AMOUNT)}\\)`))).toBeVisible();
 });
 
 test('headers de seguridad, caché del CDN, SEO', async ({ page, request }) => {

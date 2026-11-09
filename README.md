@@ -121,7 +121,7 @@ npm run fallback:update
 Todo lo editable a mano está en **`src/config.ts`**, con comentarios:
 
 - `WHATSAPP_NUMBER`, `INSTAGRAM_URL`: contacto.
-- `MIN_DELIVERY_AMOUNT`: compra mínima para delivery (**provisorio: 20000**).
+- `MIN_DELIVERY_AMOUNT`: compra mínima para el delivery sin cargo (hoy **15000**). Cambiándolo se actualizan solos todos los textos y el carrito.
 - `PICKUP_AREA`: zona de retiro (`zona Campus universitario`). La dirección exacta no se publica.
 - `BUSINESS_HOURS`: horarios (`null` = "los coordinamos por WhatsApp").
 - `DELIVERY_FEE_INFO`: texto sobre el costo del envío (hoy: "El delivery es sin cargo."; `null` = no se muestra).

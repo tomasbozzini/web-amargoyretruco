@@ -42,9 +42,8 @@ export const INSTAGRAM_HANDLE = '@amargoyretruco.tandil';
 /**
  * Compra mínima (en pesos) para ofrecer delivery en Tandil.
  * Debajo de este monto solo se ofrece retiro.
- * TODO: definir el valor real. 20000 es PROVISORIO.
  */
-export const MIN_DELIVERY_AMOUNT = 20000;
+export const MIN_DELIVERY_AMOUNT = 15000;
 
 /** Zona de retiro. La dirección exacta NO se publica: se coordina por WhatsApp. */
 export const PICKUP_AREA = 'zona Campus universitario';
