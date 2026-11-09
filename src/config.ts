@@ -94,10 +94,22 @@ export type SalesMode = 'normal' | 'encargo' | 'pausa';
  */
 export const SALES_MODE: SalesMode = 'encargo';
 
+/**
+ * Cuándo llega la yerba (para los textos del modo 'encargo').
+ * `null` = fecha sin confirmar: los textos dicen "Muy pronto".
+ */
+export const RESTOCK_DATE: string | null = 'martes 10/11';
+
 /** Cartel del catálogo en modo 'encargo'. */
-export const PREORDER_TITLE = 'Muy pronto renovamos stock';
-export const PREORDER_TEXT =
-  'Ya podés dejar tu encargo: armá tu pedido y mandalo por WhatsApp. Te avisamos cuando llegue la yerba para coordinar la entrega.';
+export const PREORDER_TITLE = RESTOCK_DATE ? `Renovamos stock el ${RESTOCK_DATE}` : 'Muy pronto renovamos stock';
+export const PREORDER_TEXT = RESTOCK_DATE
+  ? `La yerba llega el ${RESTOCK_DATE}. Ya podés dejar tu encargo: armá tu pedido y mandalo por WhatsApp, y apenas llegue coordinamos la entrega.`
+  : 'Ya podés dejar tu encargo: armá tu pedido y mandalo por WhatsApp. Te avisamos cuando llegue la yerba para coordinar la entrega.';
+
+/** Aviso dentro del carrito en modo 'encargo'. */
+export const PREORDER_CART_NOTE = RESTOCK_DATE
+  ? `la yerba llega el ${RESTOCK_DATE}. Mandanos tu pedido y te avisamos por WhatsApp cuando esté, para coordinar la entrega.`
+  : 'la yerba todavía no llegó. Mandanos tu pedido y te avisamos por WhatsApp cuando esté, para coordinar la entrega.';
 
 /** Cartel del catálogo en modo 'pausa'. */
 export const SALES_PAUSED_TITLE = 'Muy pronto renovamos stock';

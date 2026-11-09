@@ -3,7 +3,7 @@
  * Panel del carrito (dialog nativo: atrapa el foco y se cierra con Esc).
  * El contenido de la lista lo arma src/scripts/app.ts con textContent.
  */
-import { BUSINESS, CART_DELIVERY_NOTE, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, type SalesMode } from '../config';
+import { BUSINESS, CART_DELIVERY_NOTE, MIN_DELIVERY_AMOUNT, ORDER_DISCLAIMER, PICKUP_AREA, PREORDER_CART_NOTE, type SalesMode } from '../config';
 import { formatPrice } from '../lib/price';
 import { CUSTOMER_ADDRESS_MAX, CUSTOMER_NAME_MAX } from '../lib/cart';
 import Icon from './Icon.astro';
@@ -47,7 +47,7 @@ const preorder = salesMode === 'encargo';
       {
         preorder && (
           <p class="mb-3 rounded-xl border-2 border-terracota bg-terracota/10 px-3 py-2 text-sm" data-preorder-note>
-            <strong class="text-terracota-oscuro">Es un encargo:</strong> la yerba todavía no llegó. Mandanos tu pedido y te avisamos por WhatsApp cuando esté, para coordinar la entrega.
+            <strong class="text-terracota-oscuro">Es un encargo:</strong> {PREORDER_CART_NOTE}
           </p>
         )
       }

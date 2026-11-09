@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { PREORDER_TITLE, RESTOCK_DATE } from '../../src/config';
 
 /**
  * Flujo completo en mobile contra el build de producción.
@@ -458,8 +459,9 @@ test('modo encargo: respeta el stock del Sheets y el mensaje llega como encargo'
   const res = await page.goto(PREORDER_SITE);
   expect(res?.status()).toBe(200);
   const banner = page.locator('[data-sales-banner="encargo"]');
-  await expect(banner.getByRole('heading', { name: 'Muy pronto renovamos stock' })).toBeVisible();
+  await expect(banner.getByRole('heading', { name: PREORDER_TITLE })).toBeVisible();
   await expect(banner).toContainText('Ya podés dejar tu encargo');
+  if (RESTOCK_DATE) await expect(banner).toContainText(`La yerba llega el ${RESTOCK_DATE}`);
 
   // Stock del Sheets: el agotado no se puede encargar y se ven las etiquetas de stock.
   const rei = card(page, ID.reiVerde); // stock 0
@@ -482,6 +484,7 @@ test('modo encargo: respeta el stock del Sheets y el mensaje llega como encargo'
   const cart = page.locator('[data-cart-dialog]');
   await expect(cart.getByRole('heading', { name: 'Tu encargo' })).toBeVisible();
   await expect(cart.locator('[data-preorder-note]')).toBeVisible();
+  if (RESTOCK_DATE) await expect(cart.locator('[data-preorder-note]')).toContainText(`la yerba llega el ${RESTOCK_DATE}`);
   await expect(cart.getByRole('button', { name: 'Sumar uno de Canarias Edición Especial' })).toBeDisabled();
   await expect(orderLink(page)).toContainText('Encargar por WhatsApp');
   await cart.getByLabel(/Retiro en zona Campus universitario/).check();
