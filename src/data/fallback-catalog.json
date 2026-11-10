@@ -1,9 +1,9 @@
 {
   "_info": "Respaldo del catálogo si el Google Sheets no responde. Mismas columnas que la pestaña Catalogo. Se regenera con `npm run fallback:update` (lee CATALOG_CSV_URL).",
-  "updatedAt": "2026-11-03",
+  "updatedAt": "2026-11-09",
   "rows": [
     { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "500 g", "Precio": "$6.850", "Stock": "8", "Foto": "", "Visible": "SI" },
-    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "1 kg", "Precio": "$11.700", "Stock": "2", "Foto": "", "Visible": "SI" },
+    { "Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "1 kg", "Precio": "$11.700", "Stock": "0", "Foto": "", "Visible": "SI" },
     { "Marca": "Canarias", "Producto": "Canarias Tradicional", "Presentación": "500 g", "Precio": "$6.450", "Stock": "7", "Foto": "", "Visible": "SI" },
     { "Marca": "Canarias", "Producto": "Canarias Serena", "Presentación": "500 g", "Precio": "$7.000", "Stock": "3", "Foto": "", "Visible": "SI" },
     { "Marca": "Canarias", "Producto": "Canarias Edición Especial", "Presentación": "500 g", "Precio": "$7.150", "Stock": "2", "Foto": "", "Visible": "SI" },
