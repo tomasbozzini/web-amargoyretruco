@@ -91,13 +91,13 @@ export type SalesMode = 'normal' | 'encargo' | 'pausa';
  * - 'pausa'   → solo se ve el catálogo con un cartel; no se puede pedir nada.
  * Después de cambiarlo, guardá y publicá (push).
  */
-export const SALES_MODE: SalesMode = 'encargo';
+export const SALES_MODE: SalesMode = 'normal';
 
 /**
  * Cuándo llega la yerba (para los textos del modo 'encargo').
  * `null` = fecha sin confirmar: los textos dicen "Muy pronto".
  */
-export const RESTOCK_DATE: string | null = 'martes 10/11';
+export const RESTOCK_DATE: string | null = null;
 
 /** Cartel del catálogo en modo 'encargo'. */
 export const PREORDER_TITLE = RESTOCK_DATE ? `Renovamos stock el ${RESTOCK_DATE}` : 'Muy pronto renovamos stock';
