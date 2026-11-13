@@ -96,7 +96,9 @@ Editás el Sheets y listo. La web lo toma en unos minutos: Vercel cachea la pág
 | `Foto` | `https://...` | Opcional. Tiene que ser un link `https` a una imagen. Si falta o no carga, se muestra una ilustración con la marca. |
 | `Visible` | `SI` | Solo se muestran las filas con `SI`. Para esconder un producto sin borrarlo, poné `NO`. |
 
-**Fotos:** lo ideal es una imagen cuadrada (por ejemplo 800×800). Sirve cualquier link `https` directo a la imagen. También podés usar un link de **Google Drive**: subí la foto, tocá **Compartir → Cualquier persona con el enlace** y pegá el link en la columna `Foto`; la web lo convierte sola.
+**Fotos (máxima calidad):** mandale las fotos a quien mantenga la web, o corré `npm run foto -- <id-del-producto> <ruta-a-la-foto>` (con `npm run foto -- --lista` ves los ids). El script recorta la foto en cuadrado, corrige los colores (las de iPhone vienen en Display P3), genera versiones AVIF/WebP de 640 y 1280 px más un JPG de respaldo, les quita los metadatos (incluida la ubicación GPS) y las anota en `src/data/fotos.json`. Si la columna **Foto** del Sheets está vacía, la web usa esa foto y cada pantalla descarga el tamaño que necesita. Conviene sacarlas todas igual (mismo lugar, distancia y luz) y con algo de aire alrededor del paquete, porque se muestran cuadradas.
+
+**Fotos por link (alternativa):** también podés pegar en la columna **Foto** un link `https` a una imagen o un link de **Google Drive** compartido con "Cualquier persona con el enlace"; la web pide a Drive una versión de 1600 px. Un link en la columna Foto tiene prioridad sobre la foto propia.
 
 **Agregar una marca o un producto:** sumá una fila nueva con todas las columnas. Los filtros por marca se actualizan solos.
 

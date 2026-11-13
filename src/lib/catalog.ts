@@ -98,7 +98,7 @@ export function parsePhotoUrl(raw: unknown): string | null {
 
   if (url.hostname === 'drive.google.com') {
     const id = /\/file\/d\/([\w-]{10,})/.exec(url.pathname)?.[1] ?? url.searchParams.get('id');
-    if (id && /^[\w-]{10,}$/.test(id)) return `https://drive.google.com/thumbnail?id=${id}&sz=w800`;
+    if (id && /^[\w-]{10,}$/.test(id)) return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
   }
   return url.toString();
 }

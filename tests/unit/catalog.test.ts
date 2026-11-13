@@ -59,7 +59,7 @@ describe('reglas por campo', () => {
     expect(parsePhotoUrl('https://user:pass@ejemplo.com/a.jpg')).toBeNull();
     expect(parsePhotoUrl('')).toBeNull();
     expect(parsePhotoUrl('https://drive.google.com/file/d/1AbCdEfGhIjKlMnOp/view?usp=sharing')).toBe(
-      'https://drive.google.com/thumbnail?id=1AbCdEfGhIjKlMnOp&sz=w800',
+      'https://drive.google.com/thumbnail?id=1AbCdEfGhIjKlMnOp&sz=w1600',
     );
   });
 

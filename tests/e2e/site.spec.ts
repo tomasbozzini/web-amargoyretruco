@@ -423,6 +423,13 @@ test('Sheets caído y sin copia en memoria: usa el respaldo y la página no se r
   // Productos de src/data/fallback-catalog.json, con aviso de lista guardada.
   await expect(page.getByText('Estamos mostrando una lista guardada')).toBeVisible();
   expect(await page.locator('[data-product]').count()).toBeGreaterThan(0);
+
+  // Foto propia de la web (src/data/fotos.json): AVIF/WebP en 640 y 1280 px, y carga bien.
+  const serena = page.locator('[data-product][data-id="canarias-canarias-serena-500-g"]');
+  await expect(serena.locator('picture source[type="image/avif"]')).toHaveAttribute('srcset', /-640\.avif 640w, .*-1280\.avif 1280w/);
+  const photo = serena.locator('img[data-product-img]');
+  await photo.scrollIntoViewIfNeeded();
+  await expect.poll(() => photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   await expect(page.getByRole('heading', { name: /Mate y truco/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: '¿Cómo se juega?' })).toBeVisible();
 });

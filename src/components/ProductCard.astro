@@ -5,6 +5,7 @@
  */
 import type { SalesMode } from '../config';
 import { stockStatus, type Product } from '../lib/catalog';
+import fotos from '../data/fotos.json';
 import { formatPrice } from '../lib/price';
 import { fullProductName, normalizeForSearch } from '../lib/text';
 import BrandArt from './BrandArt.astro';
@@ -35,6 +36,17 @@ const fullName = fullProductName(product.brand, product.name);
 const searchText = normalizeForSearch(`${product.brand} ${product.name} ${product.presentation}`);
 const titleId = `p-${product.id}-title`;
 const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
+const photoAlt = `${fullName}${product.presentation ? ` ${product.presentation}` : ''}`;
+
+/*
+ * Foto propia de la web (public/fotos, generada con `npm run foto`): se usa si la
+ * columna Foto del Sheets está vacía. AVIF/WebP en 640 y 1280 px: cada pantalla
+ * baja el tamaño que necesita.
+ */
+const localPhoto = product.photo ? null : (fotos as Record<string, { anchos: number[] }>)[product.id] ?? null;
+const srcset = (ext: string) => localPhoto?.anchos.map((w) => `/fotos/${product.id}-${w}.${ext} ${w}w`).join(', ');
+// Ancho de la foto en pantalla: 2 columnas en mobile, 3 en tablet, 4 (~270 px) en escritorio.
+const photoSizes = '(min-width: 1024px) 270px, (min-width: 768px) 31vw, 46vw';
 ---
 
 <li class="flex" data-product-item>
@@ -54,10 +66,10 @@ const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
     <div class="relative m-2 mb-0 aspect-square overflow-hidden rounded-xl">
       <BrandArt brand={product.brand} presentation={product.presentation} variant={brandIndex} />
       {
-        product.photo && (
+        product.photo ? (
           <img
             src={product.photo}
-            alt={`${fullName}${product.presentation ? ` ${product.presentation}` : ''}`}
+            alt={photoAlt}
             width="400"
             height="400"
             loading="lazy"
@@ -66,6 +78,23 @@ const itemLabel = [fullName, product.presentation].filter(Boolean).join(' ');
             class="absolute inset-0 size-full bg-white object-cover"
             data-product-img
           />
+        ) : (
+          localPhoto && (
+            <picture>
+              <source type="image/avif" srcset={srcset('avif')} sizes={photoSizes} />
+              <source type="image/webp" srcset={srcset('webp')} sizes={photoSizes} />
+              <img
+                src={`/fotos/${product.id}-${localPhoto.anchos.at(-1)}.jpg`}
+                alt={photoAlt}
+                width="1280"
+                height="1280"
+                loading="lazy"
+                decoding="async"
+                class="absolute inset-0 size-full bg-white object-cover"
+                data-product-img
+              />
+            </picture>
+          )
         )
       }
       {
