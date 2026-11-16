@@ -1,12 +1,12 @@
 ---
-# TEXTO PROVISORIO: reemplazalo por el tuyo cuando quieras.
+# Texto de la sección "Quiénes somos". Podés cambiarlo cuando quieras.
 # Podés usar Markdown: **negrita**, *cursiva*, párrafos separados por una línea en blanco.
 title: Quiénes somos
 kicker: Nuestra mano
 ---
 
-Somos **Amargo y Retruco**, un emprendimiento de Tandil que junta dos cosas bien nuestras: el mate y el truco.
+Somos **dos hermanos** y arrancamos con algo bien nuestro: tomar mates y compartir un rato con la familia y los amigos. De ahí salió **Amargo y Retruco**.
 
-Elegimos yerbas que nos gustan, las tenemos en casa y te las llevamos por delivery en Tandil, o pasás a buscarlas por la zona del Campus universitario. Sin vueltas: armás el pedido, lo charlamos por WhatsApp y listo.
+Probamos cada yerba antes de venderla y traemos marcas que no se consiguen en todos lados. Te atendemos nosotros, directo por WhatsApp, y te la llevamos con delivery en Tandil o la retirás en zona Campus universitario.
 
-En la mesa de truco se vale mentir. Acá no: lo que ves es lo que hay. *Un buen mate empieza con una buena yerba.*
+¿Y el nombre? Por el truco: te cantan truco y vos, con el mate en la mano, contestás «¡amargo y retruco!». *Un buen mate empieza con una buena yerba.*
