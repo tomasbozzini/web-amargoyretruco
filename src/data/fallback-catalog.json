@@ -14,6 +14,7 @@
     {"Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "500 g", "Precio": "$5.700", "Stock": "0", "Foto": "", "Visible": "SI"},
     {"Marca": "Canarias", "Producto": "Canarias Suave", "Presentación": "500 g", "Precio": "$7.150", "Stock": "0", "Foto": "", "Visible": "SI"},
     {"Marca": "Rei Verde", "Producto": "Rei Verde Clásica", "Presentación": "1 kg", "Precio": "$9.600", "Stock": "0", "Foto": "", "Visible": "SI"},
-    {"Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "1 kg", "Precio": "$9.600", "Stock": "0", "Foto": "", "Visible": "SI"}
+    {"Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "1 kg", "Precio": "$9.600", "Stock": "0", "Foto": "", "Visible": "SI"},
+    {"Marca": "Verdecita", "Producto": "Verdecita", "Presentación": "1 kg", "Precio": "$8.950", "Stock": "0", "Foto": "", "Visible": "SI"}
   ]
 }
