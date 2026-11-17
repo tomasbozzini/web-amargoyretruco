@@ -199,6 +199,23 @@ export function stockStatus(stock: number): 'soldout' | 'low' | 'ok' {
   return 'ok';
 }
 
+/**
+ * Texto de stock que se ve en cada tarjeta, con el número exacto del Sheets.
+ * Venta normal: "6 disponibles" / "¡Quedan 2!" / "¡Queda 1!" / "Sin stock".
+ * Encargo: "Hay 6 para encargar". En pausa no se muestra (null).
+ */
+export function stockLabel(
+  stock: number,
+  mode: 'normal' | 'encargo' | 'pausa' = 'normal',
+): { text: string; tone: 'soldout' | 'low' | 'ok' } | null {
+  if (mode === 'pausa') return null;
+  const tone = stockStatus(stock);
+  if (tone === 'soldout') return { text: 'Sin stock', tone };
+  if (mode === 'encargo') return { text: `Hay ${stock} para encargar`, tone };
+  if (tone === 'low') return { text: stock === 1 ? '¡Queda 1!' : `¡Quedan ${stock}!`, tone };
+  return { text: `${stock} disponibles`, tone };
+}
+
 /* ------------------------------------------------------------------ */
 /* Carga con respaldo                                                  */
 /* ------------------------------------------------------------------ */

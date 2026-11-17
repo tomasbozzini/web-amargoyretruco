@@ -92,13 +92,13 @@ Editás el Sheets y listo. La web lo toma en unos minutos: Vercel cachea la pág
 | `Producto` | `Baldo Tradicional` | Obligatoria. |
 | `Presentación` | `500 g`, `1 kg` | Opcional. |
 | `Precio` | `8600`, `$8.600` o `8.600,00` | Precio **por paquete**. Si está vacío, no es un número, es 0 o es mayor a $1.000.000, **la fila no se muestra**. |
-| `Stock` | `6` | Entero. `0` muestra **Agotado** (no se puede agregar). `1` o `2` muestran **Últimas unidades**. Vacío o inválido cuenta como 0. El carrito no deja pedir más que el stock. |
+| `Stock` | `6` | Entero. Cada tarjeta muestra el número exacto: **6 disponibles**; con `1` o `2`, **¡Quedan 2!** (en terracota); con `0`, **Sin stock** y el botón **Agotado** (no se puede agregar). Vacío o inválido cuenta como 0. El carrito no deja pedir más que el stock. Si tu sistema de ventas actualiza esta columna, la web lo toma sola (puede tardar unos minutos por la caché). |
 | `Foto` | `https://...` | Opcional. Tiene que ser un link `https` a una imagen. Si falta o no carga, se muestra una ilustración con la marca. |
 | `Visible` | `SI` | Solo se muestran las filas con `SI`. Para esconder un producto sin borrarlo, poné `NO`. |
 
 **Fotos (máxima calidad):** mandale las fotos a quien mantenga la web, o corré `npm run foto -- <id-del-producto> <ruta-a-la-foto>` (con `npm run foto -- --lista` ves los ids). El script recorta la foto en cuadrado, corrige los colores (las de iPhone vienen en Display P3), genera versiones AVIF/WebP de 640 y 1280 px más un JPG de respaldo, les quita los metadatos (incluida la ubicación GPS) y las anota en `src/data/fotos.json`. Si la columna **Foto** del Sheets está vacía, la web usa esa foto y cada pantalla descarga el tamaño que necesita. Conviene sacarlas todas igual (mismo lugar, distancia y luz) y con algo de aire alrededor del paquete, porque se muestran cuadradas.
 
-Para que todos los paquetes se vean del mismo tamaño aunque las fotos se hayan sacado a distinta distancia, agregá `--paquete=izq,arriba,der,abajo`: la caja del paquete en porcentaje del ancho y del alto de la foto (por ejemplo `--paquete=32.7,31.75,70.7,80.25`). El script encuadra para que el paquete ocupe el 78 % del alto, centrado y con aire arriba para las etiquetas de stock. Sin `--paquete` recorta desde el centro.
+Para que todos los paquetes se vean del mismo tamaño aunque las fotos se hayan sacado a distinta distancia, agregá `--paquete=izq,arriba,der,abajo`: la caja del paquete en porcentaje del ancho y del alto de la foto (por ejemplo `--paquete=32.7,31.75,70.7,80.25`). El script encuadra para que el paquete ocupe el 78 % del alto, centrado y con un poco de aire arriba. Sin `--paquete` recorta desde el centro.
 
 **Fotos por link (alternativa):** también podés pegar en la columna **Foto** un link `https` a una imagen o un link de **Google Drive** compartido con "Cualquier persona con el enlace"; la web pide a Drive una versión de 1600 px. Un link en la columna Foto tiene prioridad sobre la foto propia.
 

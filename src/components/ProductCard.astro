@@ -4,7 +4,7 @@
  * (Astro los escapa); el script del cliente los lee con `dataset`.
  */
 import type { SalesMode } from '../config';
-import { stockStatus, type Product } from '../lib/catalog';
+import { stockLabel, stockStatus, type Product } from '../lib/catalog';
 import fotos from '../data/fotos.json';
 import { formatPrice } from '../lib/price';
 import { fullProductName, normalizeForSearch } from '../lib/text';
@@ -30,8 +30,10 @@ const status = stockStatus(product.stock);
 const soldOut = status === 'soldout';
 /** No se puede agregar: agotado o ventas en pausa. */
 const unavailable = soldOut || salesPaused;
-/** Etiquetas de stock ("Agotado", "Últimas unidades"): en venta normal y en encargo. */
-const showStock = !salesPaused;
+/** Línea de stock con el número exacto del Sheets (no se muestra en pausa). */
+const stock = stockLabel(product.stock, salesMode);
+const stockClass = { ok: 'text-verde', low: 'text-terracota-oscuro', soldout: 'text-[#6a645a]' };
+const stockDot = { ok: 'bg-verde', low: 'bg-terracota', soldout: 'bg-[#a29c90]' };
 const fullName = fullProductName(product.brand, product.name);
 const searchText = normalizeForSearch(`${product.brand} ${product.name} ${product.presentation}`);
 const titleId = `p-${product.id}-title`;
@@ -97,15 +99,6 @@ const photoSizes = '(min-width: 1024px) 270px, (min-width: 768px) 31vw, 46vw';
           )
         )
       }
-      {
-        !showStock ? null : soldOut ? (
-          <span class="label absolute top-1.5 right-1.5 rounded px-1.5 pt-[3px] pb-[2px] text-[0.7rem] shadow-sm ring-1 sm:top-2 sm:right-2 sm:px-2 sm:py-1 sm:text-sm bg-verde-oscuro text-crema ring-crema">Agotado</span>
-        ) : (
-          status === 'low' && (
-            <span class="label absolute top-1.5 right-1.5 rounded px-1.5 pt-[3px] pb-[2px] text-[0.7rem] shadow-sm ring-1 max-[380px]:max-w-[4rem] max-[380px]:text-center max-[380px]:leading-[1.1] sm:top-2 sm:right-2 sm:px-2 sm:py-1 sm:text-sm bg-crema text-terracota-oscuro ring-terracota-oscuro">Últimas unidades</span>
-          )
-        )
-      }
     </div>
 
     <div class="flex flex-1 flex-col gap-1 p-3 pt-3 sm:p-4">
@@ -115,6 +108,14 @@ const photoSizes = '(min-width: 1024px) 270px, (min-width: 768px) 31vw, 46vw';
       <p class="mt-auto pt-2 font-display text-2xl text-verde-oscuro">
         <span class="sr-only">Precio: </span><span data-price-value>{formatPrice(product.price)}</span>
       </p>
+      {
+        stock && (
+          <p class:list={['flex items-center gap-1.5 text-sm font-semibold', stockClass[stock.tone]]} data-stock-label={stock.tone}>
+            <span class:list={['size-2 shrink-0 rounded-full', stockDot[stock.tone]]} aria-hidden="true" />
+            {stock.text}
+          </p>
+        )
+      }
       <p class="min-h-5 text-sm font-semibold text-terracota-oscuro" data-in-cart></p>
       <button
         type="button"

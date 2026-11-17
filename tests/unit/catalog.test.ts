@@ -9,6 +9,7 @@ import {
   recordsFromCsv,
   recordsFromObjects,
   resetCatalogMemory,
+  stockLabel,
   stockStatus,
   validateCsvUrl,
 } from '../../src/lib/catalog';
@@ -68,6 +69,17 @@ describe('reglas por campo', () => {
     expect(stockStatus(1)).toBe('low');
     expect(stockStatus(2)).toBe('low');
     expect(stockStatus(3)).toBe('ok');
+  });
+
+  it('texto de stock: número exacto del Sheets según el modo', () => {
+    expect(stockLabel(6)).toEqual({ text: '6 disponibles', tone: 'ok' });
+    expect(stockLabel(3)).toEqual({ text: '3 disponibles', tone: 'ok' });
+    expect(stockLabel(2)).toEqual({ text: '¡Quedan 2!', tone: 'low' });
+    expect(stockLabel(1)).toEqual({ text: '¡Queda 1!', tone: 'low' });
+    expect(stockLabel(0)).toEqual({ text: 'Sin stock', tone: 'soldout' });
+    expect(stockLabel(4, 'encargo')).toEqual({ text: 'Hay 4 para encargar', tone: 'ok' });
+    expect(stockLabel(0, 'encargo')).toEqual({ text: 'Sin stock', tone: 'soldout' });
+    expect(stockLabel(6, 'pausa')).toBeNull();
   });
 });
 

@@ -119,7 +119,7 @@ export const SALES_PAUSED_TEXT =
 /* Catálogo                                                            */
 /* ------------------------------------------------------------------ */
 
-/** Con este stock o menos se muestra "Últimas unidades". */
+/** Con este stock o menos la tarjeta dice "¡Quedan N!" (en terracota). */
 export const LOW_STOCK_THRESHOLD = 2;
 
 /** Precios mayores a esto se consideran un error de carga y la fila se ignora. */

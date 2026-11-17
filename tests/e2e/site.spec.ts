@@ -71,13 +71,16 @@ test('muestra el catálogo del Sheets con precios y estados de stock', async ({ 
   expect(norm(await card(page, ID.baldo500).locator('[data-price-value]').innerText())).toBe('$ 8.600');
   expect(norm(await card(page, ID.baldo1kg).locator('[data-price-value]').innerText())).toBe('$ 15.900');
 
-  // Agotado: etiqueta y botón deshabilitado.
-  await expect(card(page, ID.reiVerde).getByText('Agotado', { exact: true }).first()).toBeVisible();
+  // Stock: el número exacto del Sheets en cada tarjeta.
+  await expect(card(page, ID.baldo500).locator('[data-stock-label]')).toHaveText('6 disponibles');
+  await expect(card(page, ID.baldo1kg).locator('[data-stock-label]')).toHaveText('4 disponibles');
+  await expect(card(page, ID.serena).locator('[data-stock-label]')).toHaveText('3 disponibles');
+  // Stock bajo (<= 2): "¡Quedan N!" en terracota.
+  await expect(card(page, ID.especial).locator('[data-stock-label="low"]')).toHaveText('¡Quedan 2!');
+  // Agotado: "Sin stock" y botón deshabilitado.
+  await expect(card(page, ID.reiVerde).locator('[data-stock-label="soldout"]')).toHaveText('Sin stock');
   await expect(card(page, ID.reiVerde).locator('[data-add]')).toBeDisabled();
-
-  // Stock bajo (<= 2): "Últimas unidades".
-  await expect(card(page, ID.especial).getByText('Últimas unidades')).toBeVisible();
-  await expect(card(page, ID.baldo500).getByText('Últimas unidades')).toHaveCount(0);
+  await expect(card(page, ID.reiVerde).locator('[data-add]')).toContainText('Agotado');
 
   // Filas ignoradas: sin precio, Visible=NO, precio absurdo, sin marca.
   await expect(page.getByText('Verdecita')).toHaveCount(0);
@@ -460,7 +463,7 @@ test('ventas en pausa: cartel "Muy pronto renovamos stock" y no se puede agregar
     await expect(button).toContainText('Muy pronto');
   }
   await expect(page.locator('[data-card-stepper]')).toHaveCount(0);
-  await expect(page.getByText('Últimas unidades')).toHaveCount(0);
+  await expect(page.locator('[data-stock-label]')).toHaveCount(0);
   await expect(page.locator('header [data-cart-open]')).toHaveCount(0);
 
   // Ni forzando el botón desde la consola se agrega algo al pedido.
@@ -484,7 +487,8 @@ test('modo encargo: respeta el stock del Sheets y el mensaje llega como encargo'
   const rei = card(page, ID.reiVerde); // stock 0
   await expect(rei.locator('[data-add]')).toBeDisabled();
   await expect(rei.locator('[data-add]')).toContainText('Agotado');
-  await expect(card(page, ID.especial).getByText('Últimas unidades')).toBeVisible();
+  await expect(rei.locator('[data-stock-label]')).toHaveText('Sin stock');
+  await expect(card(page, ID.especial).locator('[data-stock-label]')).toHaveText('Hay 2 para encargar');
 
   // Con stock: "Encargar" y tope = stock del Sheets (2).
   const especial = card(page, ID.especial);
