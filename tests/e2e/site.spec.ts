@@ -374,7 +374,7 @@ test('preguntas frecuentes en acordeón accesible', async ({ page }) => {
 test('headers de seguridad, caché del CDN, SEO', async ({ page, request }) => {
   const res = await request.get('/');
   const headers = res.headers();
-  expect(headers['cache-control']).toBe('public, s-maxage=300, stale-while-revalidate=3600');
+  expect(headers['cache-control']).toBe('public, s-maxage=60, stale-while-revalidate=60');
   expect(headers['content-security-policy']).toContain("script-src 'self'");
   expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
   expect(headers['x-content-type-options']).toBe('nosniff');

@@ -84,7 +84,7 @@ Web Analytics no usa cookies ni guarda datos personales de los visitantes. El pl
 
 ## 4. Cambiar precios, stock y fotos (desde el Sheets)
 
-Editás el Sheets y listo. La web lo toma en unos minutos: Vercel cachea la página 5 minutos y Google también tarda unos minutos en actualizar el CSV publicado. **No hace falta redeploy.**
+Editás el Sheets y listo. La web lo toma en unos minutos: Google tarda hasta ~5 minutos en actualizar el CSV publicado y Vercel guarda la página como mucho ~2 minutos más. **No hace falta redeploy.** Si recién cambiaste algo y no lo ves, esperá unos minutos y recargá.
 
 | Columna | Qué poner | Reglas |
 | --- | --- | --- |

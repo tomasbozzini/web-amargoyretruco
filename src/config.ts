@@ -125,8 +125,13 @@ export const LOW_STOCK_THRESHOLD = 2;
 /** Precios mayores a esto se consideran un error de carga y la fila se ignora. */
 export const MAX_REASONABLE_PRICE = 1_000_000;
 
-/** Caché del CDN de Vercel: un cambio en el Sheets se ve en unos 5 minutos sin redeploy. */
-export const CATALOG_CACHE_CONTROL = 'public, s-maxage=300, stale-while-revalidate=3600';
+/**
+ * Caché del CDN de Vercel. Corta a propósito: la web muestra el stock exacto, así que una
+ * copia vieja no puede durar. Como mucho ~2 minutos (60 s fresca + 60 s mientras se renueva).
+ * Antes era s-maxage=300 y stale-while-revalidate=3600: con pocas visitas, la primera podía
+ * ver una copia de hasta una hora.
+ */
+export const CATALOG_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=60';
 
 /** Tiempo máximo de espera al leer el CSV del Sheets. */
 export const CATALOG_FETCH_TIMEOUT_MS = 5000;
