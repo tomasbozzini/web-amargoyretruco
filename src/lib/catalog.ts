@@ -154,7 +154,23 @@ export function buildProducts(records: RawRecord[]): BuildResult {
     products.push({ id, brand: marca, name: producto, presentation: presentacion, price: precio, stock, photo: foto });
   });
 
-  return { products, ignored };
+  return { products: groupPresentations(products), ignored };
+}
+
+/**
+ * Pone juntas las presentaciones del mismo producto (por ejemplo Rei Verde Clásica
+ * 500 g y 1 kg), aunque en el Sheets el kilo esté cargado al final. Respeta el orden
+ * del Sheets: cada grupo va donde aparece su primera fila.
+ */
+export function groupPresentations(products: Product[]): Product[] {
+  const groups = new Map<string, Product[]>();
+  for (const product of products) {
+    const key = `${normalizeForSearch(product.brand)}|${normalizeForSearch(product.name)}`;
+    const group = groups.get(key);
+    if (group) group.push(product);
+    else groups.set(key, [product]);
+  }
+  return [...groups.values()].flat();
 }
 
 /** Convierte el texto CSV en registros. Falla si no tiene las columnas esperadas. */

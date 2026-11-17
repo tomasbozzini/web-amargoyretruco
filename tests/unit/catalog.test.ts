@@ -129,6 +129,24 @@ describe('buildProducts: limpieza y duplicados', () => {
     expect(products[0].name.endsWith('…')).toBe(true);
   });
 
+  it('pone el kilo al lado de su medio kilo aunque en el Sheets esté al final', () => {
+    const base = { precio: '100', stock: '1', visible: 'SI' };
+    const { products } = buildProducts([
+      { ...base, marca: 'Baldo', producto: 'Baldo Tradicional', presentacion: '500 g' },
+      { ...base, marca: 'Rei Verde', producto: 'Rei Verde Clásica', presentacion: '500 g' },
+      { ...base, marca: 'Centenaria', producto: 'Centenaria', presentacion: '500 g' },
+      { ...base, marca: 'Rei Verde', producto: 'Rei Verde Clasica', presentacion: '1 kg' },
+      { ...base, marca: 'Centenaria', producto: 'Centenaria', presentacion: '1 kg' },
+    ]);
+    expect(products.map((p) => `${p.name} ${p.presentation}`)).toEqual([
+      'Baldo Tradicional 500 g',
+      'Rei Verde Clásica 500 g',
+      'Rei Verde Clasica 1 kg',
+      'Centenaria 500 g',
+      'Centenaria 1 kg',
+    ]);
+  });
+
   it('desambigua ids repetidos', () => {
     const row = { marca: 'Baldo', producto: 'Baldo', presentacion: '500 g', precio: '100', stock: '1', visible: 'SI' };
     const { products } = buildProducts([row, row]);
