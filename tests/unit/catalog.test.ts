@@ -147,6 +147,26 @@ describe('buildProducts: limpieza y duplicados', () => {
     ]);
   });
 
+  it('agrupa por marca: un producto nuevo cargado al final va con los de su marca', () => {
+    const base = { precio: '100', stock: '1', visible: 'SI' };
+    const { products } = buildProducts([
+      { ...base, marca: 'Canarias', producto: 'Canarias Tradicional', presentacion: '500 g' },
+      { ...base, marca: 'Rei Verde', producto: 'Rei Verde Clásica', presentacion: '500 g' },
+      { ...base, marca: 'Sara', producto: 'Sara Coco', presentacion: '500 g' },
+      { ...base, marca: 'Canarias', producto: 'Canarias Suave', presentacion: '500 g' },
+      { ...base, marca: 'Rei Verde', producto: 'Rei Verde Clásica', presentacion: '1 kg' },
+      { ...base, marca: 'Rei Verde', producto: 'Rei Verde Premium', presentacion: '1 kg' },
+    ]);
+    expect(products.map((p) => `${p.name} ${p.presentation}`)).toEqual([
+      'Canarias Tradicional 500 g',
+      'Canarias Suave 500 g',
+      'Rei Verde Clásica 500 g',
+      'Rei Verde Clásica 1 kg',
+      'Rei Verde Premium 1 kg',
+      'Sara Coco 500 g',
+    ]);
+  });
+
   it('desambigua ids repetidos', () => {
     const row = { marca: 'Baldo', producto: 'Baldo', presentacion: '500 g', precio: '100', stock: '1', visible: 'SI' };
     const { products } = buildProducts([row, row]);

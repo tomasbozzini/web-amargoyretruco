@@ -158,19 +158,24 @@ export function buildProducts(records: RawRecord[]): BuildResult {
 }
 
 /**
- * Pone juntas las presentaciones del mismo producto (por ejemplo Rei Verde Clásica
- * 500 g y 1 kg), aunque en el Sheets el kilo esté cargado al final. Respeta el orden
- * del Sheets: cada grupo va donde aparece su primera fila.
+ * Ordena el catálogo por marca y, dentro de cada marca, junta las presentaciones del
+ * mismo producto (por ejemplo Rei Verde Clásica 500 g y 1 kg). Así, un producto o un
+ * kilo cargado al final del Sheets aparece igual al lado de los de su marca.
+ * Respeta el orden del Sheets: cada marca, y cada producto dentro de ella, va donde
+ * aparece su primera fila.
  */
 export function groupPresentations(products: Product[]): Product[] {
-  const groups = new Map<string, Product[]>();
+  const brands = new Map<string, Map<string, Product[]>>();
   for (const product of products) {
-    const key = `${normalizeForSearch(product.brand)}|${normalizeForSearch(product.name)}`;
-    const group = groups.get(key);
+    const brandKey = normalizeForSearch(product.brand);
+    const nameKey = normalizeForSearch(product.name);
+    let brand = brands.get(brandKey);
+    if (!brand) brands.set(brandKey, (brand = new Map()));
+    const group = brand.get(nameKey);
     if (group) group.push(product);
-    else groups.set(key, [product]);
+    else brand.set(nameKey, [product]);
   }
-  return [...groups.values()].flat();
+  return [...brands.values()].flatMap((brand) => [...brand.values()].flat());
 }
 
 /** Convierte el texto CSV en registros. Falla si no tiene las columnas esperadas. */

@@ -1,6 +1,6 @@
 {
   "_info": "Respaldo del catálogo si el Google Sheets no responde. Mismas columnas que la pestaña Catalogo. Se regenera con `npm run fallback:update` (lee CATALOG_CSV_URL).",
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-19",
   "rows": [
     {"Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "500 g", "Precio": "$7.400", "Stock": "3", "Foto": "", "Visible": "SI"},
     {"Marca": "Baldo", "Producto": "Baldo Tradicional", "Presentación": "1 kg", "Precio": "$12.250", "Stock": "0", "Foto": "", "Visible": "SI"},
@@ -15,6 +15,9 @@
     {"Marca": "Canarias", "Producto": "Canarias Suave", "Presentación": "500 g", "Precio": "$7.150", "Stock": "0", "Foto": "", "Visible": "SI"},
     {"Marca": "Rei Verde", "Producto": "Rei Verde Clásica", "Presentación": "1 kg", "Precio": "$9.600", "Stock": "0", "Foto": "", "Visible": "SI"},
     {"Marca": "Centenaria", "Producto": "Centenaria", "Presentación": "1 kg", "Precio": "$9.600", "Stock": "0", "Foto": "", "Visible": "SI"},
-    {"Marca": "Verdecita", "Producto": "Verdecita", "Presentación": "1 kg", "Precio": "$8.950", "Stock": "0", "Foto": "", "Visible": "SI"}
+    {"Marca": "Verdecita", "Producto": "Verdecita", "Presentación": "1 kg", "Precio": "$8.950", "Stock": "0", "Foto": "", "Visible": "SI"},
+    {"Marca": "Rei Verde", "Producto": "Rei Verde Premium", "Presentación": "1 kg", "Precio": "$12.350", "Stock": "0", "Foto": "", "Visible": "SI"},
+    {"Marca": "Centenaria", "Producto": "Centenaria Esencial", "Presentación": "500 g", "Precio": "$5.050", "Stock": "0", "Foto": "", "Visible": "SI"},
+    {"Marca": "Centenaria", "Producto": "Centenaria Esencial", "Presentación": "1 kg", "Precio": "$8.050", "Stock": "0", "Foto": "", "Visible": "SI"}
   ]
 }
